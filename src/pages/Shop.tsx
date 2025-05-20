@@ -1,5 +1,6 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import MainLayout from '@/components/layout/MainLayout';
 import PageHeader from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,8 @@ import { ShoppingCart, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const categories = [
   { id: 'all', name: 'All Products' },
@@ -17,68 +20,31 @@ const categories = [
   { id: 'health', name: 'Health & Wellness' },
 ];
 
-const products = [
-  {
-    id: 1,
-    name: 'Premium Dog Food',
-    category: 'food',
-    price: 89.99,
-    image: 'https://images.unsplash.com/photo-1582798358481-d199fb7347bb?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 2,
-    name: 'Cat Scratch Tower',
-    category: 'accessories',
-    price: 120.00,
-    image: 'https://images.unsplash.com/photo-1585071550721-fdb362ae2b8d?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 3,
-    name: 'Plush Dog Toy Set',
-    category: 'toys',
-    price: 24.99,
-    image: 'https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 4,
-    name: 'Pet Grooming Brush',
-    category: 'grooming',
-    price: 15.50,
-    image: 'https://images.unsplash.com/photo-1599012307905-23c3ca27d7c9?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 5,
-    name: 'Cat Food - Seafood Blend',
-    category: 'food',
-    price: 45.75,
-    image: 'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 6,
-    name: 'Dog Collar - Premium Leather',
-    category: 'accessories',
-    price: 32.99,
-    image: 'https://images.unsplash.com/photo-1599390756029-56dd8a6609f4?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 7,
-    name: 'Interactive Cat Toy',
-    category: 'toys',
-    price: 18.50,
-    image: 'https://images.unsplash.com/photo-1615789591457-74a63395c990?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    id: 8,
-    name: 'Flea & Tick Treatment',
-    category: 'health',
-    price: 55.25,
-    image: 'https://images.unsplash.com/photo-1618946456726-83652a3751f4?auto=format&fit=crop&w=600&q=80',
-  },
-];
-
 const Shop = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+
+  const { data: products = [], isLoading, error } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*');
+      
+      if (error) {
+        toast.error('Failed to load products');
+        throw error;
+      }
+      
+      return data || [];
+    },
+  });
+
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching products:', error);
+    }
+  }, [error]);
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
@@ -140,7 +106,11 @@ const Shop = () => {
                   categories.find(c => c.id === selectedCategory)?.name}
               </h2>
               
-              {filteredProducts.length === 0 ? (
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-vet-blue"></div>
+                </div>
+              ) : filteredProducts.length === 0 ? (
                 <div className="bg-vet-light rounded-lg p-8 text-center">
                   <p className="text-gray-600">No products found. Try a different search or category.</p>
                 </div>
@@ -153,14 +123,14 @@ const Shop = () => {
                     >
                       <div className="relative h-48">
                         <img 
-                          src={product.image}
+                          src={product.image_url}
                           alt={product.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <div className="p-4">
                         <span className="text-sm text-vet-teal font-medium">
-                          {categories.find(c => c.id === product.category)?.name.replace('Pet ', '')}
+                          {categories.find(c => c.id === product.category)?.name || product.category}
                         </span>
                         <h3 className="text-vet-dark font-medium text-lg mt-1 hover:text-vet-blue transition-custom">
                           {product.name}
