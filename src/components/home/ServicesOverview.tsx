@@ -32,7 +32,7 @@ const services = [
   {
     id: 'kennel',
     title: 'Boarding Services',
-    description: 'Safe and comfortable accommodation for your pets while you're away.',
+    description: 'Safe and comfortable accommodation for your pets while you\'re away.',
     icon: Dog,
   },
 ];
