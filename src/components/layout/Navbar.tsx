@@ -1,14 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, ShoppingCart } from 'lucide-react';
+import { Menu, X, ShoppingCart, Phone, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const { cart } = useCart();
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 80) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -27,9 +44,11 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-      className="bg-white shadow-sm sticky top-0 z-40"
+      className={`bg-white sticky top-0 z-40 transition-all duration-300 ${
+        scrolled ? 'shadow-md py-2' : 'py-4'
+      }`}
     >
-      <div className="container-custom py-4 flex items-center justify-between">
+      <div className="container-custom flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <motion.img 
@@ -38,7 +57,7 @@ const Navbar = () => {
             transition={{ duration: 0.5 }}
             src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825970/Koneys_Logo_pfrnkh.png" 
             alt="Koney's Vet Hospital Logo" 
-            className="h-12" 
+            className={`${scrolled ? 'h-10' : 'h-14'} transition-all duration-300`} 
           />
         </Link>
 
@@ -53,12 +72,15 @@ const Navbar = () => {
             >
               <Link
                 to={link.path}
-                className="text-vet-dark hover:text-vet-blue font-medium transition-custom relative group"
+                className={`text-vet-dark hover:text-vet-teal font-medium transition-custom relative group ${
+                  location.pathname === link.path ? 'text-vet-teal' : ''
+                }`}
               >
                 {link.name}
                 <motion.span 
-                  className="absolute bottom-0 left-0 w-0 h-0.5 bg-vet-blue group-hover:w-full transition-all duration-300"
-                  whileHover={{ width: '100%' }}
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-vet-teal transition-all duration-300 ${
+                    location.pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`}
                 />
               </Link>
             </motion.div>
@@ -72,9 +94,17 @@ const Navbar = () => {
           transition={{ delay: 0.6, duration: 0.5 }}
           className="hidden md:flex items-center gap-3"
         >
+          <Link to="/appointment" className="mr-2">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button className="bg-vet-teal hover:bg-vet-blue text-white rounded-full px-5 flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>Appointment</span>
+              </Button>
+            </motion.div>
+          </Link>
           <Link to="/shop/cart">
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button variant="outline" size="icon" className="relative">
+              <Button variant="outline" size="icon" className="relative rounded-full border-vet-teal text-vet-teal hover:bg-vet-teal hover:text-white">
                 <ShoppingCart className="h-5 w-5" />
                 <AnimatePresence>
                   {cartCount > 0 && (

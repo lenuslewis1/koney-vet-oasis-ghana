@@ -1,11 +1,11 @@
-import { Syringe, Stethoscope, Scissors, Dog, PawPrint, Calendar } from 'lucide-react';
+import { Syringe, Stethoscope, Scissors, Dog, PawPrint, Calendar, FileText, Microscope, Plane, Briefcase } from 'lucide-react';
 
 export const services = [
   {
-    id: 'preventative',
-    title: 'Preventative Care',
-    description: 'Regular check-ups and preventative treatments are essential for maintaining your pet\'s health and catching potential issues early. Our comprehensive wellness exams include thorough physical assessments and personalized care recommendations.',
-    icon: PawPrint,
+    id: 'consultation',
+    title: 'Consultation',
+    description: 'Our comprehensive consultation services address all aspects of pet health, from nutrition and behavior to managing chronic conditions and senior pet care. Our veterinarians take the time to listen to your concerns and develop customized care plans.',
+    icon: Calendar,
     image: 'https://images.unsplash.com/photo-1551832586-4079ef0a8978?auto=format&fit=crop&w=800&q=80',
     pricing: 'From GH₵150 per visit',
     longDescription: [
@@ -55,7 +55,7 @@ export const services = [
   },
   {
     id: 'vaccinations',
-    title: 'Vaccinations',
+    title: 'Vaccination',
     description: "Protect your pets from common and potentially fatal diseases with our vaccination programs. We offer core and non-core vaccines tailored to your pet's lifestyle and risk factors, following international veterinary guidelines.",
     icon: Syringe,
     image: 'https://images.unsplash.com/photo-1559000357-f6b52ddfcb99?auto=format&fit=crop&w=800&q=80',

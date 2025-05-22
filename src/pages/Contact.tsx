@@ -87,8 +87,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-vet-dark mb-1">Location</h3>
-                    <p className="text-gray-600">123 Veterinary Road</p>
-                    <p className="text-gray-600">East Legon, Accra, Ghana</p>
+                    <p className="text-gray-600">House #12 Swaniker Street</p>
+                    <p className="text-gray-600">Abelempke, Accra, Ghana</p>
                   </div>
                 </div>
                 
@@ -107,7 +107,7 @@ const Contact = () => {
               
               <div className="rounded-lg overflow-hidden h-80 shadow-md">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.4898808344076!2d-0.1817204!3d5.6340587!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9c7ebaeaaaab%3A0x5e8c5056f07c6f49!2sEast%20Legon%2C%20Accra!5e0!3m2!1sen!2sgh!4v1621345678901!5m2!1sen!2sgh"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.5203931350194!2d-0.21382492414694946!3d5.629863633121085!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9b5f12d3b0a7%3A0xf8a5b6b8a3f0a0c!2sAbelenkpe%2C%20Accra!5e0!3m2!1sen!2sgh!4v1716397970544!5m2!1sen!2sgh"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}

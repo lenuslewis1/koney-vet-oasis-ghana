@@ -26,24 +26,39 @@ const Footer = () => {
               <div className="flex items-center gap-4 pt-2">
                 <motion.a 
                   whileHover={{ scale: 1.2, color: '#00A7B5' }} 
-                  href="https://facebook.com" 
+                  href="https://www.facebook.com/profile.php?id=100079096176304" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="transition-custom"
                 >
                   <Facebook className="h-5 w-5" />
                 </motion.a>
                 <motion.a 
                   whileHover={{ scale: 1.2, color: '#00A7B5' }} 
-                  href="https://instagram.com" 
+                  href="https://www.instagram.com/koney_s_veterinary_hospital/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="transition-custom"
                 >
                   <Instagram className="h-5 w-5" />
                 </motion.a>
                 <motion.a 
                   whileHover={{ scale: 1.2, color: '#00A7B5' }} 
-                  href="https://twitter.com" 
+                  href="https://x.com/koneysvet20" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="transition-custom"
                 >
                   <Twitter className="h-5 w-5" />
+                </motion.a>
+                <motion.a 
+                  whileHover={{ scale: 1.2, color: '#00A7B5' }} 
+                  href="https://www.tiktok.com/@koneysvethospital" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-custom"
+                >
+                  <i className="fab fa-tiktok h-5 w-5"></i>
                 </motion.a>
               </div>
             </div>
@@ -165,7 +180,7 @@ const Footer = () => {
                     <MapPin className="h-5 w-5 text-vet-teal shrink-0 mt-0.5" />
                   </motion.div>
                   <span className="text-gray-300">
-                    123 Veterinary Road, East Legon, Accra, Ghana
+                    House #12 Swaniker Street, Abelempke, Accra Ghana
                   </span>
                 </li>
                 <li>

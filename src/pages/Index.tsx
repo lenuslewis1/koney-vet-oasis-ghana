@@ -2,9 +2,13 @@
 import MainLayout from '@/components/layout/MainLayout';
 import HeroSection from '@/components/home/HeroSection';
 import ServicesOverview from '@/components/home/ServicesOverview';
+import WhyChooseUs from '@/components/home/WhyChooseUs';
+import AppointmentProcess from '@/components/home/AppointmentProcess';
+import EmergencyServices from '@/components/home/EmergencyServices';
+import OpeningHours from '@/components/home/OpeningHours';
+import EnhancedTestimonials from '@/components/home/EnhancedTestimonials';
 import AboutSection from '@/components/home/AboutSection';
 import FeaturedProducts from '@/components/home/FeaturedProducts';
-import TestimonialsSection from '@/components/home/TestimonialsSection';
 import CtaSection from '@/components/home/CtaSection';
 
 
@@ -13,9 +17,13 @@ const Index = () => {
     <MainLayout>
       <HeroSection />
       <ServicesOverview />
+      <WhyChooseUs />
+      <AppointmentProcess />
+      <EmergencyServices />
+      <OpeningHours />
       <AboutSection />
       <FeaturedProducts />
-      <TestimonialsSection />
+      <EnhancedTestimonials />
       <CtaSection />
     </MainLayout>
   );
