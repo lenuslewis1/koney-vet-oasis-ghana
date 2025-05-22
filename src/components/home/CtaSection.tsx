@@ -16,9 +16,9 @@ const CtaSection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/appointment">
+            <Link to="/services">
               <Button size="lg" className="bg-white text-vet-blue hover:bg-gray-100">
-                Book an Appointment
+                Explore Our Services
               </Button>
             </Link>
             

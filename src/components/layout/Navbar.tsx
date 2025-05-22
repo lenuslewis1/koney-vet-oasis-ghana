@@ -1,10 +1,13 @@
-
 import { useState } from 'react';
+import { useCart } from '@/context/CartContext';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, PawPrint, ShoppingCart } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
+  const { cart } = useCart();
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -20,81 +23,156 @@ const Navbar = () => {
   ];
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-40">
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+      className="bg-white shadow-sm sticky top-0 z-40"
+    >
       <div className="container-custom py-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <PawPrint className="h-8 w-8 text-vet-blue" />
-          <span className="font-display font-bold text-xl text-vet-dark">
-            Koney's <span className="text-vet-blue">Vet Hospital</span>
-          </span>
+          <motion.img 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825970/Koneys_Logo_pfrnkh.png" 
+            alt="Koney's Vet Hospital Logo" 
+            className="h-12" 
+          />
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link
+          {navLinks.map((link, index) => (
+            <motion.div
               key={link.name}
-              to={link.path}
-              className="text-vet-dark hover:text-vet-blue font-medium transition-custom"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index, duration: 0.5 }}
             >
-              {link.name}
-            </Link>
+              <Link
+                to={link.path}
+                className="text-vet-dark hover:text-vet-blue font-medium transition-custom relative group"
+              >
+                {link.name}
+                <motion.span 
+                  className="absolute bottom-0 left-0 w-0 h-0.5 bg-vet-blue group-hover:w-full transition-all duration-300"
+                  whileHover={{ width: '100%' }}
+                />
+              </Link>
+            </motion.div>
           ))}
         </nav>
 
         {/* Action Buttons */}
-        <div className="hidden md:flex items-center gap-3">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+          className="hidden md:flex items-center gap-3"
+        >
           <Link to="/shop/cart">
-            <Button variant="outline" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-2 -right-2 bg-vet-coral text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                0
-              </span>
-            </Button>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button variant="outline" size="icon" className="relative">
+                <ShoppingCart className="h-5 w-5" />
+                <AnimatePresence>
+                  {cartCount > 0 && (
+                    <motion.span 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="absolute -top-2 -right-2 bg-vet-coral text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                    >
+                      {cartCount}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </Button>
+            </motion.div>
           </Link>
-          <Link to="/appointment">
-            <Button className="bg-vet-blue hover:bg-vet-teal">Book Appointment</Button>
-          </Link>
-        </div>
+        </motion.div>
 
         {/* Mobile Menu Button */}
-        <button className="md:hidden" onClick={toggleMenu} aria-label="Toggle menu">
-          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        <motion.button 
+          whileTap={{ scale: 0.9 }}
+          className="md:hidden" 
+          onClick={toggleMenu} 
+          aria-label="Toggle menu"
+        >
+          <AnimatePresence mode="wait">
+            {isMenuOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <X className="h-6 w-6" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="menu"
+                initial={{ rotate: 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Menu className="h-6 w-6" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
       </div>
 
       {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-t">
-          <div className="container-custom py-4 flex flex-col gap-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className="text-vet-dark hover:text-vet-blue font-medium py-2 transition-custom"
-                onClick={() => setIsMenuOpen(false)}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden bg-white border-t overflow-hidden"
+          >
+            <div className="container-custom py-4 flex flex-col gap-4">
+              {navLinks.map((link, index) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ x: -50, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.1, duration: 0.3 }}
+                >
+                  <Link
+                    to={link.path}
+                    className="text-vet-dark hover:text-vet-blue font-medium py-2 transition-custom block"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
+              <motion.div 
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: navLinks.length * 0.1, duration: 0.3 }}
+                className="flex flex-col gap-3 pt-2 border-t"
               >
-                {link.name}
-              </Link>
-            ))}
-            <div className="flex flex-col gap-3 pt-2 border-t">
-              <Link 
-                to="/shop/cart"
-                onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-2 text-vet-dark"
-              >
-                <ShoppingCart className="h-5 w-5" />
-                <span>Cart (0)</span>
-              </Link>
-              <Link to="/appointment" onClick={() => setIsMenuOpen(false)}>
-                <Button className="bg-vet-blue hover:bg-vet-teal w-full">Book Appointment</Button>
-              </Link>
+                <Link 
+                  to="/shop/cart"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-2 text-vet-dark"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  <span>Cart ({cartCount})</span>
+                </Link>
+              </motion.div>
             </div>
-          </div>
-        </div>
-      )}
-    </header>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 };
 

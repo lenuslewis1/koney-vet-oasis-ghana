@@ -64,12 +64,12 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				vet: {
-					'blue': '#2D79A2',
-					'teal': '#43B3A7',
+					'blue': '#125A8F',
+					'teal': '#00A7B5',
 					'green': '#6EC59A',
 					'coral': '#FF7F6A',
 					'light': '#F7F9FC',
-					'dark': '#2C3E50'
+					'dark': '#1A3A4A'
 				}
 			},
 			borderRadius: {

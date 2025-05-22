@@ -6,8 +6,10 @@ import { ShoppingCart } from 'lucide-react';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useCart } from '@/context/CartContext';
 
 const FeaturedProducts = () => {
+  const { addToCart } = useCart();
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['featuredProducts'],
     queryFn: async () => {
@@ -61,7 +63,21 @@ const FeaturedProducts = () => {
                   </Link>
                   <div className="flex items-center justify-between mt-3">
                     <span className="font-semibold text-vet-dark">GH₵{product.price.toFixed(2)}</span>
-                    <Button size="sm" className="bg-vet-blue hover:bg-vet-teal h-9 w-9 p-0">
+                    <Button 
+                      size="sm" 
+                      className="bg-vet-blue hover:bg-vet-teal h-9 w-9 p-0"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        addToCart({
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          image: product.image_url,
+                          quantity: 1,
+                        });
+                        toast.success(`Added ${product.name} to cart`);
+                      }}
+                    >
                       <ShoppingCart className="h-4 w-4" />
                     </Button>
                   </div>

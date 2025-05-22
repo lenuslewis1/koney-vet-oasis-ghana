@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useCart } from '@/context/CartContext';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import MainLayout from '@/components/layout/MainLayout';
@@ -46,9 +47,19 @@ const ProductDetail = () => {
     }
   };
 
-  const addToCart = () => {
-    toast.success(`Added ${quantity} ${product?.name} to cart`);
-    // Here you would implement actual cart functionality
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image_url,
+        quantity,
+      });
+      toast.success(`Added ${quantity} ${product.name} to cart`);
+    }
   };
 
   if (error) {
@@ -125,7 +136,7 @@ const ProductDetail = () => {
                   
                   <Button 
                     className="bg-vet-blue hover:bg-vet-teal flex items-center"
-                    onClick={addToCart}
+                    onClick={handleAddToCart}
                   >
                     <ShoppingCart className="h-4 w-4 mr-2" /> Add to Cart
                   </Button>

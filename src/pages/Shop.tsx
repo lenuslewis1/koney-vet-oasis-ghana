@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import PageHeader from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useCart } from '@/context/CartContext';
 
 const categories = [
   { id: 'all', name: 'All Products' },
@@ -23,6 +25,7 @@ const categories = [
 const Shop = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const { addToCart } = useCart();
 
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['products'],
@@ -121,26 +124,44 @@ const Shop = () => {
                       key={product.id}
                       className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-custom"
                     >
-                      <div className="relative h-48">
-                        <img 
-                          src={product.image_url}
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="p-4">
-                        <span className="text-sm text-vet-teal font-medium">
-                          {categories.find(c => c.id === product.category)?.name || product.category}
-                        </span>
-                        <h3 className="text-vet-dark font-medium text-lg mt-1 hover:text-vet-blue transition-custom">
-                          {product.name}
-                        </h3>
-                        <div className="flex items-center justify-between mt-3">
-                          <span className="font-semibold text-vet-dark">GH₵{product.price.toFixed(2)}</span>
-                          <Button size="sm" className="bg-vet-blue hover:bg-vet-teal h-9 w-9 p-0">
-                            <ShoppingCart className="h-4 w-4" />
-                          </Button>
+                      <Link to={`/shop/product/${product.id}`} className="block">
+                        <div className="relative h-48">
+                          <img 
+                            src={product.image_url}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
+                        <div className="p-4">
+                          <span className="text-sm text-vet-teal font-medium">
+                            {categories.find(c => c.id === product.category)?.name || product.category}
+                          </span>
+                          <h3 className="text-vet-dark font-medium text-lg mt-1 hover:text-vet-blue transition-custom">
+                            {product.name}
+                          </h3>
+                          <div className="flex items-center justify-between mt-3">
+                            <span className="font-semibold text-vet-dark">GH₵{product.price.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </Link>
+                      <div className="px-4 pb-4 -mt-2">
+                        <Button 
+                          size="sm" 
+                          className="bg-vet-blue hover:bg-vet-teal w-full"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            addToCart({
+                              id: product.id,
+                              name: product.name,
+                              price: product.price,
+                              image: product.image_url,
+                              quantity: 1,
+                            });
+                            toast.success(`Added ${product.name} to cart`);
+                          }}
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-2" /> Add to Cart
+                        </Button>
                       </div>
                     </div>
                   ))}
