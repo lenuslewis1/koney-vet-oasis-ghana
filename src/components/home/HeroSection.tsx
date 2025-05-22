@@ -73,8 +73,8 @@ const HeroSection = () => {
                 </Link>
                 <Link to="/services">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="outline" size="lg" className="text-white border-white hover:bg-white/20 rounded-full px-6 flex items-center gap-2">
-                      <span>Our Services</span>
+                    <Button variant="outline" size="lg" className="text-white bg-vet-teal border-white hover:bg-vet-teal/50 rounded-full px-6 flex items-center gap-2">
+                      <span>Explore Our Services</span>
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </motion.div>

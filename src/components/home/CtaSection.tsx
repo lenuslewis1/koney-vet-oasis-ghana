@@ -23,7 +23,7 @@ const CtaSection = () => {
             </Link>
             
             <Link to="/contact">
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/20">
+              <Button variant="outline" size="lg" className="border-white bg-vet-teal text-white hover:bg-vet-teal/20">
                 Contact Us
               </Button>
             </Link>
