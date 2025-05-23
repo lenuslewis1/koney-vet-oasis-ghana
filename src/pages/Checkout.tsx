@@ -1,4 +1,3 @@
-
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
@@ -6,7 +5,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { saveOrder } from '@/lib/supabase';
+import { saveOrder, Order } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 const Checkout = () => {
@@ -50,7 +49,7 @@ const Checkout = () => {
         address: address,
         items: orderItems,
         totalAmount: total,
-        status: 'pending',
+        status: 'pending' as Order['status'], // Explicitly type as Order['status']
         notes: paymentMethod === 'now' ? 'Paid via MoMo' : 'Pay on delivery'
       };
       
