@@ -54,8 +54,8 @@ export const getAllBlogPosts = async () => {
   try {
     const response = await contentfulClient.getEntries<BlogPostSkeleton>({
       content_type: 'blogPost',
-      order: ['-fields.publishDate'], // Fix: Use array for order parameter
-    });
+      order: ['-sys.createdAt'], // Use sys.createdAt instead of fields.publishDate
+    } as any); // Type assertion to bypass strict typing
     
     return { 
       posts: response.items,
@@ -75,7 +75,7 @@ export const getBlogPostBySlug = async (slug: string) => {
   try {
     const response = await contentfulClient.getEntries<BlogPostSkeleton>({
       content_type: 'blogPost',
-      'fields.slug': slug, // Keep as is, but cast the object type
+      'fields.slug': slug,
       limit: 1,
     } as any); // Use type assertion to bypass TypeScript constraint temporarily
     
