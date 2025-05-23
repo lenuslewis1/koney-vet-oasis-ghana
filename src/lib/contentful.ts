@@ -1,5 +1,5 @@
 
-import { createClient } from 'contentful';
+import { createClient, EntrySkeletonType } from 'contentful';
 
 // Contentful configuration
 // These would typically be stored in environment variables
@@ -8,11 +8,9 @@ export const contentfulClient = createClient({
   accessToken: 'your_access_token', // Replace with your Contentful access token
 });
 
-// Type definitions for blog content
-export interface BlogPost {
-  sys: {
-    id: string;
-  };
+// Type definitions for blog content - Updated to extend EntrySkeletonType
+export interface BlogPostSkeleton extends EntrySkeletonType {
+  contentTypeId: 'blogPost';
   fields: {
     title: string;
     slug: string;
@@ -43,10 +41,18 @@ export interface BlogPost {
   };
 }
 
+// Legacy interface for compatibility
+export interface BlogPost {
+  sys: {
+    id: string;
+  };
+  fields: BlogPostSkeleton['fields'];
+}
+
 // Function to get all blog posts
 export const getAllBlogPosts = async () => {
   try {
-    const response = await contentfulClient.getEntries<BlogPost>({
+    const response = await contentfulClient.getEntries<BlogPostSkeleton>({
       content_type: 'blogPost',
       order: '-fields.publishDate',
     });
@@ -67,7 +73,7 @@ export const getAllBlogPosts = async () => {
 // Function to get a single blog post by slug
 export const getBlogPostBySlug = async (slug: string) => {
   try {
-    const response = await contentfulClient.getEntries<BlogPost>({
+    const response = await contentfulClient.getEntries<BlogPostSkeleton>({
       content_type: 'blogPost',
       'fields.slug': slug,
       limit: 1,
