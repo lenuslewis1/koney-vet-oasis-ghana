@@ -64,7 +64,7 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				vet: {
-					'blue': '#125A8F',
+					'blue': '#096cb8',
 					'teal': '#00A7B5',
 					'green': '#6EC59A',
 					'coral': '#FF7F6A',
