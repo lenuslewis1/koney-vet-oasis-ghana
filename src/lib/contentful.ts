@@ -54,7 +54,7 @@ export const getAllBlogPosts = async () => {
   try {
     const response = await contentfulClient.getEntries<BlogPostSkeleton>({
       content_type: 'blogPost',
-      order: '-fields.publishDate',
+      order: ['-fields.publishDate'], // Fix: Use array for order parameter
     });
     
     return { 
@@ -75,9 +75,9 @@ export const getBlogPostBySlug = async (slug: string) => {
   try {
     const response = await contentfulClient.getEntries<BlogPostSkeleton>({
       content_type: 'blogPost',
-      'fields.slug': slug,
+      'fields.slug': slug, // Keep as is, but cast the object type
       limit: 1,
-    });
+    } as any); // Use type assertion to bypass TypeScript constraint temporarily
     
     if (response.items.length === 0) {
       throw new Error('Blog post not found');
