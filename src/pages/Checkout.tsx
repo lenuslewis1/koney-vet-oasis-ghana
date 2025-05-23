@@ -1,3 +1,4 @@
+
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
@@ -5,6 +6,8 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { saveOrder } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 const Checkout = () => {
   const { cart, clearCart } = useCart();
@@ -13,6 +16,7 @@ const Checkout = () => {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('later');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
   const total = cart.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
@@ -20,11 +24,51 @@ const Checkout = () => {
   const hospitalPhone = '053 373 4385';
   const momoName = "Koney's Veterinary Hospital";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would send the order to your backend
-    clearCart();
-    setSubmitted(true);
+    
+    if (cart.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      // Convert cart items to order items format
+      const orderItems = cart.map(item => ({
+        productId: item.id,
+        productName: item.name,
+        quantity: item.quantity,
+        price: item.price
+      }));
+      
+      const orderData = {
+        customerName: name,
+        customerEmail: email,
+        customerPhone: phone, 
+        address: address,
+        items: orderItems,
+        totalAmount: total,
+        status: 'pending',
+        notes: paymentMethod === 'now' ? 'Paid via MoMo' : 'Pay on delivery'
+      };
+      
+      const { data, error } = await saveOrder(orderData);
+      
+      if (error) {
+        throw error;
+      }
+      
+      clearCart();
+      setSubmitted(true);
+      toast.success('Order placed successfully!');
+    } catch (error) {
+      console.error('Error placing order:', error);
+      toast.error('Failed to place order. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -88,7 +132,13 @@ const Checkout = () => {
           )}
           
           <div className="font-bold text-lg mt-4">Order Total: ₵{total.toFixed(2)}</div>
-          <Button className="bg-vet-blue hover:bg-vet-teal w-full mt-2" type="submit">Place Order</Button>
+          <Button 
+            className="bg-vet-blue hover:bg-vet-teal w-full mt-2" 
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Processing...' : 'Place Order'}
+          </Button>
         </form>
       </div>
     </MainLayout>

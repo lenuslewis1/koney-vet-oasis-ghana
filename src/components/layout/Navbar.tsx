@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, ShoppingCart, Phone, Calendar } from 'lucide-react';
+import { Menu, X, ShoppingCart, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
@@ -94,11 +95,11 @@ const Navbar = () => {
           transition={{ delay: 0.6, duration: 0.5 }}
           className="hidden md:flex items-center gap-3"
         >
-          <Link to="/appointment" className="mr-2">
+          <Link to="tel:+233533734385" className="mr-2">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button className="bg-vet-teal hover:bg-vet-blue text-white rounded-full px-5 flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <span>Appointment</span>
+                <Phone className="h-4 w-4" />
+                <span>Call Us</span>
               </Button>
             </motion.div>
           </Link>
@@ -196,6 +197,14 @@ const Navbar = () => {
                 >
                   <ShoppingCart className="h-5 w-5" />
                   <span>Cart ({cartCount})</span>
+                </Link>
+                <Link 
+                  to="tel:+233533734385"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-2 text-vet-dark"
+                >
+                  <Phone className="h-5 w-5" />
+                  <span>Call Us</span>
                 </Link>
               </motion.div>
             </div>
