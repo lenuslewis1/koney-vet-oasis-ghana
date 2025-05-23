@@ -10,6 +10,7 @@ import EnhancedTestimonials from '@/components/home/EnhancedTestimonials';
 import AboutSection from '@/components/home/AboutSection';
 import FeaturedProducts from '@/components/home/FeaturedProducts';
 import CtaSection from '@/components/home/CtaSection';
+import RecentBlogPosts from '@/components/home/RecentBlogPosts';
 
 
 const Index = () => {
@@ -23,6 +24,7 @@ const Index = () => {
       <OpeningHours />
       <AboutSection />
       <FeaturedProducts />
+      <RecentBlogPosts />
       <EnhancedTestimonials />
       <CtaSection />
     </MainLayout>

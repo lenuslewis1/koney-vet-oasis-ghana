@@ -1,0 +1,91 @@
+
+import { createClient } from 'contentful';
+
+// Contentful configuration
+// These would typically be stored in environment variables
+export const contentfulClient = createClient({
+  space: 'your_space_id', // Replace with your Contentful space ID
+  accessToken: 'your_access_token', // Replace with your Contentful access token
+});
+
+// Type definitions for blog content
+export interface BlogPost {
+  sys: {
+    id: string;
+  };
+  fields: {
+    title: string;
+    slug: string;
+    publishDate: string;
+    featuredImage: {
+      fields: {
+        file: {
+          url: string;
+        };
+        title: string;
+      };
+    };
+    excerpt: string;
+    content: any; // Rich text content
+    author?: {
+      fields: {
+        name: string;
+        picture?: {
+          fields: {
+            file: {
+              url: string;
+            };
+          };
+        };
+      };
+    };
+    categories?: string[];
+  };
+}
+
+// Function to get all blog posts
+export const getAllBlogPosts = async () => {
+  try {
+    const response = await contentfulClient.getEntries<BlogPost>({
+      content_type: 'blogPost',
+      order: '-fields.publishDate',
+    });
+    
+    return { 
+      posts: response.items,
+      error: null
+    };
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return { 
+      posts: [],
+      error 
+    };
+  }
+};
+
+// Function to get a single blog post by slug
+export const getBlogPostBySlug = async (slug: string) => {
+  try {
+    const response = await contentfulClient.getEntries<BlogPost>({
+      content_type: 'blogPost',
+      'fields.slug': slug,
+      limit: 1,
+    });
+    
+    if (response.items.length === 0) {
+      throw new Error('Blog post not found');
+    }
+    
+    return { 
+      post: response.items[0],
+      error: null
+    };
+  } catch (error) {
+    console.error(`Error fetching blog post with slug "${slug}":`, error);
+    return { 
+      post: null,
+      error 
+    };
+  }
+};
