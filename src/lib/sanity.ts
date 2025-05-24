@@ -4,7 +4,7 @@ import { createClient } from '@sanity/client';
 // Sanity configuration
 // These would typically be stored in environment variables
 export const sanityClient = createClient({
-  projectId: 'your-project-id', // Replace with your Sanity project ID (must contain only a-z, 0-9, and dashes)
+  projectId: 'fqp1d8a4', // Your Sanity project ID
   dataset: 'production', // or the name of your dataset
   useCdn: true, // Enable CDN for faster response times
   apiVersion: '2023-05-03', // Use current date or latest API version
