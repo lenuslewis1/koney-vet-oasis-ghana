@@ -109,8 +109,12 @@ const BlogPostPage = () => {
               
               <h1 className="text-3xl md:text-4xl font-display font-bold mb-6">{post.title}</h1>
               
-              <div className="prose max-w-none">
-                {post.content && <PortableText value={post.content} />}
+              <div className="prose prose-lg max-w-none prose-headings:text-vet-dark prose-p:text-gray-700 prose-a:text-vet-blue hover:prose-a:text-vet-teal prose-strong:text-vet-dark">
+                {post.content && post.content.length > 0 ? (
+                  <PortableText value={post.content} />
+                ) : (
+                  <p className="text-gray-600 italic">No content available for this blog post.</p>
+                )}
               </div>
               
               {post.categories && post.categories.length > 0 && (
