@@ -4,10 +4,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import PageHeader from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/button';
-import { getBlogPostBySlug, BlogPost } from '@/lib/contentful';
+import { getBlogPostBySlug, BlogPost } from '@/lib/sanity';
 import { formatDistance } from 'date-fns';
 import { ChevronLeft, Loader2, Calendar, User } from 'lucide-react';
-import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
+import { PortableText } from '@portabletext/react';
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -62,11 +62,11 @@ const BlogPostPage = () => {
   return (
     <MainLayout>
       <PageHeader 
-        title={post.fields.title}
-        bgImage={post.fields.featuredImage?.fields.file.url || "https://images.unsplash.com/photo-1600272006232-a9653d91c8a5?auto=format&fit=crop&q=80"}
+        title={post.title}
+        bgImage={post.featuredImage?.asset.url || "https://images.unsplash.com/photo-1600272006232-a9653d91c8a5?auto=format&fit=crop&q=80"}
         breadcrumbs={[
           { label: 'Blog', path: '/blog' },
-          { label: post.fields.title, path: `/blog/${post.fields.slug}` }
+          { label: post.title, path: `/blog/${post.slug.current}` }
         ]}
       />
       
@@ -78,11 +78,11 @@ const BlogPostPage = () => {
           </Link>
           
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            {post.fields.featuredImage && (
+            {post.featuredImage && (
               <div className="h-64 md:h-96 overflow-hidden">
                 <img 
-                  src={post.fields.featuredImage.fields.file.url} 
-                  alt={post.fields.featuredImage.fields.title || post.fields.title} 
+                  src={post.featuredImage.asset.url} 
+                  alt={post.featuredImage.alt || post.title} 
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -90,33 +90,33 @@ const BlogPostPage = () => {
             
             <div className="p-6 md:p-10">
               <div className="flex flex-wrap items-center gap-4 mb-4 text-sm text-gray-600">
-                {post.fields.publishDate && (
+                {post.publishDate && (
                   <div className="flex items-center">
                     <Calendar className="mr-2 h-4 w-4" />
-                    <time dateTime={post.fields.publishDate}>
-                      {formatDistance(new Date(post.fields.publishDate), new Date(), { addSuffix: true })}
+                    <time dateTime={post.publishDate}>
+                      {formatDistance(new Date(post.publishDate), new Date(), { addSuffix: true })}
                     </time>
                   </div>
                 )}
                 
-                {post.fields.author && (
+                {post.author && (
                   <div className="flex items-center">
                     <User className="mr-2 h-4 w-4" />
-                    <span>{post.fields.author.fields.name}</span>
+                    <span>{post.author.name}</span>
                   </div>
                 )}
               </div>
               
-              <h1 className="text-3xl md:text-4xl font-display font-bold mb-6">{post.fields.title}</h1>
+              <h1 className="text-3xl md:text-4xl font-display font-bold mb-6">{post.title}</h1>
               
               <div className="prose max-w-none">
-                {post.fields.content && documentToReactComponents(post.fields.content)}
+                {post.content && <PortableText value={post.content} />}
               </div>
               
-              {post.fields.categories && post.fields.categories.length > 0 && (
+              {post.categories && post.categories.length > 0 && (
                 <div className="mt-8 pt-6 border-t border-gray-200">
                   <div className="flex flex-wrap gap-2">
-                    {post.fields.categories.map((category, index) => (
+                    {post.categories.map((category, index) => (
                       <span 
                         key={index}
                         className="px-3 py-1 bg-vet-light text-vet-blue text-sm rounded-full"

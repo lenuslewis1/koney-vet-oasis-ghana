@@ -5,7 +5,7 @@ import MainLayout from '@/components/layout/MainLayout';
 import PageHeader from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { getAllBlogPosts, BlogPost } from '@/lib/contentful';
+import { getAllBlogPosts, BlogPost } from '@/lib/sanity';
 import { formatDistance } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 
@@ -59,14 +59,14 @@ const Blog = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {posts.map((post) => (
-                <Link to={`/blog/${post.fields.slug}`} key={post.sys.id}>
+                <Link to={`/blog/${post.slug.current}`} key={post._id}>
                   <Card className="h-full transition-all hover:shadow-lg">
                     <CardHeader className="p-0">
-                      {post.fields.featuredImage && (
+                      {post.featuredImage && (
                         <div className="h-48 overflow-hidden">
                           <img 
-                            src={post.fields.featuredImage.fields.file.url} 
-                            alt={post.fields.featuredImage.fields.title || post.fields.title} 
+                            src={post.featuredImage.asset.url} 
+                            alt={post.featuredImage.alt || post.title} 
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -74,14 +74,14 @@ const Blog = () => {
                     </CardHeader>
                     <CardContent className="pt-6">
                       <div className="text-sm text-vet-blue mb-2">
-                        {post.fields.publishDate && (
+                        {post.publishDate && (
                           <span>
-                            {formatDistance(new Date(post.fields.publishDate), new Date(), { addSuffix: true })}
+                            {formatDistance(new Date(post.publishDate), new Date(), { addSuffix: true })}
                           </span>
                         )}
                       </div>
-                      <h3 className="text-xl font-display font-bold mb-2">{post.fields.title}</h3>
-                      <p className="text-gray-600">{post.fields.excerpt}</p>
+                      <h3 className="text-xl font-display font-bold mb-2">{post.title}</h3>
+                      <p className="text-gray-600">{post.excerpt}</p>
                     </CardContent>
                     <CardFooter>
                       <Button variant="ghost" className="text-vet-blue font-semibold hover:text-vet-teal">

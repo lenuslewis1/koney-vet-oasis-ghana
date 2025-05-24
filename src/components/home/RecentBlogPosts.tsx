@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { getAllBlogPosts, BlogPost } from '@/lib/contentful';
+import { getAllBlogPosts, BlogPost } from '@/lib/sanity';
 import { formatDistance } from 'date-fns';
 import { ArrowRight } from 'lucide-react';
 
@@ -48,13 +48,13 @@ const RecentBlogPosts = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {posts.length > 0 ? (
             posts.map((post) => (
-              <Link to={`/blog/${post.fields.slug}`} key={post.sys.id}>
+              <Link to={`/blog/${post.slug.current}`} key={post._id}>
                 <Card className="h-full hover:shadow-lg transition-all">
                   <div className="h-48 overflow-hidden">
-                    {post.fields.featuredImage && (
+                    {post.featuredImage && (
                       <img 
-                        src={post.fields.featuredImage.fields.file.url} 
-                        alt={post.fields.featuredImage.fields.title || post.fields.title} 
+                        src={post.featuredImage.asset.url} 
+                        alt={post.featuredImage.alt || post.title} 
                         className="w-full h-full object-cover"
                       />
                     )}
@@ -62,14 +62,14 @@ const RecentBlogPosts = () => {
                   
                   <CardContent className="pt-6">
                     <div className="text-sm text-vet-blue mb-2">
-                      {post.fields.publishDate && (
+                      {post.publishDate && (
                         <span>
-                          {formatDistance(new Date(post.fields.publishDate), new Date(), { addSuffix: true })}
+                          {formatDistance(new Date(post.publishDate), new Date(), { addSuffix: true })}
                         </span>
                       )}
                     </div>
-                    <h3 className="text-xl font-display font-bold mb-2">{post.fields.title}</h3>
-                    <p className="text-gray-600 line-clamp-3">{post.fields.excerpt}</p>
+                    <h3 className="text-xl font-display font-bold mb-2">{post.title}</h3>
+                    <p className="text-gray-600 line-clamp-3">{post.excerpt}</p>
                   </CardContent>
                   
                   <CardFooter>
