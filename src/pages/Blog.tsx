@@ -1,0 +1,102 @@
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import MainLayout from '../components/layout/MainLayout';
+import BlockContent from '@sanity/block-content-to-react';
+import { urlFor, Post } from '../lib/sanity';
+import { getAllPostsProxy } from '../lib/sanityProxy';
+
+const Blog = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        console.log('Attempting to fetch posts from Sanity using proxy...');
+        const data = await getAllPostsProxy();
+        console.log('Sanity proxy response:', data);
+        setPosts(data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        setLoading(false);
+      }
+    };
+    
+    fetchPosts();
+  }, []);
+
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString;
+    }
+  };
+
+  return (
+    <MainLayout>
+      <div className="container mx-auto px-4 py-12">
+        <h1 className="text-4xl font-bold text-center mb-12 text-primary">Our Blog</h1>
+        
+        {loading ? (
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-xl">No blog posts found.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post) => (
+              <div key={post._id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
+                {post.mainImage && (
+                  <img
+                    src={urlFor(post.mainImage).width(600).height(400).url()}
+                    alt={post.title}
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+                <div className="p-6">
+                  <div className="flex items-center mb-2">
+                    <span className="text-sm text-gray-500">{formatDate(post.publishedAt)}</span>
+                    {post.categories && post.categories.length > 0 && (
+                      <span className="ml-auto bg-primary-light text-primary text-xs px-2 py-1 rounded-full">
+                        {post.categories[0]}
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="text-xl font-semibold mb-2 text-primary">{post.title}</h2>
+                  {post.excerpt && (
+                    <p className="text-gray-600 mb-4 line-clamp-3">{post.excerpt}</p>
+                  )}
+                  <div className="flex items-center justify-between">
+                    {post.authorName && (
+                      <span className="text-sm text-gray-500">By {post.authorName}</span>
+                    )}
+                    <Link
+                      to={`/blog/${post.slug.current}`}
+                      className="text-primary font-medium hover:underline"
+                    >
+                      Read More →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </MainLayout>
+  );
+};
+
+export default Blog;

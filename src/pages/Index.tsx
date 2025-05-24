@@ -9,6 +9,7 @@ import OpeningHours from '@/components/home/OpeningHours';
 import EnhancedTestimonials from '@/components/home/EnhancedTestimonials';
 import AboutSection from '@/components/home/AboutSection';
 import FeaturedProducts from '@/components/home/FeaturedProducts';
+import FeaturedBlogPosts from '@/components/home/FeaturedBlogPosts';
 import CtaSection from '@/components/home/CtaSection';
 
 
@@ -23,6 +24,7 @@ const Index = () => {
       <OpeningHours />
       <AboutSection />
       <FeaturedProducts />
+      <FeaturedBlogPosts />
       <EnhancedTestimonials />
       <CtaSection />
     </MainLayout>

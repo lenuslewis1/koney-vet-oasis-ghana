@@ -17,6 +17,8 @@ import Checkout from "./pages/Checkout";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import ProductDetail from "./pages/ProductDetail";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +74,16 @@ const AnimatedRoutes = () => {
         <Route path="/contact" element={
           <PageTransition>
             <Contact />
+          </PageTransition>
+        } />
+        <Route path="/blog" element={
+          <PageTransition>
+            <Blog />
+          </PageTransition>
+        } />
+        <Route path="/blog/:slug" element={
+          <PageTransition>
+            <BlogPost />
           </PageTransition>
         } />
         <Route path="*" element={
