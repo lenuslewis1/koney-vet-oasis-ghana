@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { urlFor, Post } from '../../lib/sanity';
-import { getFeaturedPostsProxy } from '../../lib/sanityProxy';
-import { getMockFeaturedPosts } from '../../lib/mockBlogData';
+import { urlFor, Post, getFeaturedPosts } from '../../lib/sanity';
 
 const FeaturedBlogPosts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -12,21 +10,10 @@ const FeaturedBlogPosts = () => {
   useEffect(() => {
     const fetchFeaturedPosts = async () => {
       try {
-        // Try to fetch from Sanity first using proxy
-        try {
-          const data = await getFeaturedPostsProxy(3); // Get 3 featured posts
-          if (data && data.length > 0) {
-            setPosts(data);
-            setLoading(false);
-            return;
-          }
-        } catch (sanityErr) {
-          console.warn('Falling back to mock data due to Sanity error:', sanityErr);
-        }
-        
-        // Fall back to mock data if Sanity fetch fails
-        const mockData = getMockFeaturedPosts(3);
-        setPosts(mockData);
+        console.log('Fetching featured posts from Sanity...');
+        const data = await getFeaturedPosts(3); // Get 3 featured posts
+        console.log('Sanity featured posts retrieved:', data);
+        setPosts(data);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching featured posts:', error);

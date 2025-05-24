@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import BlockContent from '@sanity/block-content-to-react';
-import { urlFor, Post } from '../lib/sanity';
-import { getPostBySlugProxy } from '../lib/sanityProxy';
-import { getMockPostBySlug } from '../lib/mockBlogData';
+import { getPostBySlug, urlFor, Post } from '../lib/sanity';
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -17,21 +15,10 @@ const BlogPost = () => {
       if (!slug) return;
       
       try {
-        // Try to fetch from Sanity first using proxy
-        try {
-          const data = await getPostBySlugProxy(slug);
-          if (data) {
-            setPost(data);
-            setLoading(false);
-            return;
-          }
-        } catch (sanityErr) {
-          console.warn('Falling back to mock data due to Sanity error:', sanityErr);
-        }
-        
-        // Fall back to mock data if Sanity fetch fails
-        const mockData = getMockPostBySlug(slug);
-        setPost(mockData);
+        console.log('Fetching post with slug:', slug);
+        const data = await getPostBySlug(slug);
+        console.log('Sanity post retrieved:', data);
+        setPost(data);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching post:', err);
@@ -43,12 +30,18 @@ const BlogPost = () => {
   }, [slug]);
 
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString;
+    }
   };
 
   if (loading) {

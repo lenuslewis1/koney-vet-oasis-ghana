@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
-import BlockContent from '@sanity/block-content-to-react';
-import { urlFor, Post } from '../lib/sanity';
-import { getAllPostsProxy } from '../lib/sanityProxy';
+import { getAllPosts, urlFor, Post } from '../lib/sanity';
 
 const Blog = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -12,9 +10,9 @@ const Blog = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        console.log('Attempting to fetch posts from Sanity using proxy...');
-        const data = await getAllPostsProxy();
-        console.log('Sanity proxy response:', data);
+        console.log('Fetching posts from Sanity...');
+        const data = await getAllPosts();
+        console.log('Sanity posts retrieved:', data);
         setPosts(data);
         setLoading(false);
       } catch (err) {

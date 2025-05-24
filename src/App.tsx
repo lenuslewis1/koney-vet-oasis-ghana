@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./components/layout/PageTransition";
+import TawkToChat from "./components/common/TawkToChat";
 
 import Index from "./pages/Index";
 import About from "./pages/About";
@@ -17,6 +18,7 @@ import Checkout from "./pages/Checkout";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import ProductDetail from "./pages/ProductDetail";
+// Using relative paths for Blog and BlogPost components
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 
@@ -76,6 +78,7 @@ const AnimatedRoutes = () => {
             <Contact />
           </PageTransition>
         } />
+        {/* Blog routes */}
         <Route path="/blog" element={
           <PageTransition>
             <Blog />
@@ -104,6 +107,11 @@ const App = () => (
       <CartProvider>
         <BrowserRouter>
           <AnimatedRoutes />
+          {/* Tawk.to chat widget - Replace with your actual Property ID and Widget ID */}
+          <TawkToChat 
+            propertyId="YOUR_TAWK_TO_PROPERTY_ID"
+            widgetId="YOUR_TAWK_TO_WIDGET_ID"
+          />
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>

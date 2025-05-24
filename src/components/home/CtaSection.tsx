@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Phone, BookOpen } from 'lucide-react';
 
 const CtaSection = () => {
   return (
@@ -22,9 +23,17 @@ const CtaSection = () => {
               </Button>
             </Link>
             
-            <Link to="/contact">
-              <Button variant="outline" size="lg" className="border-white bg-vet-teal text-white hover:bg-vet-teal/20">
-                Contact Us
+            <Link to="/blog">
+              <Button variant="outline" size="lg" className="border-white bg-vet-teal text-white hover:bg-vet-teal/20 flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
+                Read Our Blog
+              </Button>
+            </Link>
+            
+            <Link to="tel:+233533734385">
+              <Button variant="outline" size="lg" className="border-white bg-vet-teal text-white hover:bg-vet-teal/20 flex items-center gap-2">
+                <Phone className="h-5 w-5" />
+                Call Us
               </Button>
             </Link>
           </div>

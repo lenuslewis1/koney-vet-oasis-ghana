@@ -11,6 +11,7 @@ import AboutSection from '@/components/home/AboutSection';
 import FeaturedProducts from '@/components/home/FeaturedProducts';
 import FeaturedBlogPosts from '@/components/home/FeaturedBlogPosts';
 import CtaSection from '@/components/home/CtaSection';
+import RecentBlogPosts from '@/components/home/RecentBlogPosts';
 
 
 const Index = () => {

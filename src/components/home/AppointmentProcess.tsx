@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { AnimatedElement } from '@/components/ui/AnimatedElement';
-import { Calendar, ClipboardCheck, Stethoscope, CheckCircle } from 'lucide-react';
+import { Calendar, ClipboardCheck, Stethoscope, CheckCircle, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -76,10 +77,11 @@ const AppointmentProcess = () => {
         
         <div className="flex justify-center">
           <AnimatedElement variant="slideUp" delay={0.5}>
-            <Link to="/appointment">
+            <Link to="tel:+233533734385">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button className="bg-vet-coral hover:bg-vet-coral/90 text-white rounded-full px-8 py-6 text-lg">
-                  Book Your Appointment Now
+                <Button className="bg-vet-coral hover:bg-vet-coral/90 text-white rounded-full px-8 py-6 text-lg flex items-center gap-2">
+                  <Phone className="h-5 w-5" />
+                  Call Us Now
                 </Button>
               </motion.div>
             </Link>
