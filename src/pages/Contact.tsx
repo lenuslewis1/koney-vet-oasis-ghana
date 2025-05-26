@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
+import { saveContactMessage } from '@/lib/supabase';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -27,19 +28,77 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      // Validate form data
+      if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+        toast({
+          title: "Error",
+          description: "Please fill in all required fields.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Save contact message to Supabase
+      const result = await saveContactMessage({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message
+      });
+      
+      if (result.error) {
+        throw new Error(result.error.message || 'Failed to send message');
+      }
+      
+      // Send notification using serverless function
+      try {
+        const response = await fetch('/api/send-notification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'contact',
+            name: formData.name,
+            email: formData.email,
+            // We'll still pass phone to the serverless function for notifications
+            // even though we don't store it in the database
+            phone: formData.phone || 'Not provided',
+            message: formData.message
+          })
+        });
+        
+        if (!response.ok) {
+          console.warn('Notification service returned an error, but form was submitted successfully');
+        }
+      } catch (notificationError) {
+        console.warn('Failed to send notification, but form was submitted successfully:', notificationError);
+      }
+      
+      // Show success message
       toast({
         title: "Message sent!",
         description: "We'll get back to you as soon as possible.",
       });
+      
+      // Reset form
       setFormData({ name: '', email: '', phone: '', message: '' });
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to send message. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (

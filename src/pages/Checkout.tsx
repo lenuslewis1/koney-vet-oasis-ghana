@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { saveOrder, Order } from '@/lib/supabase';
+import { saveOrder, checkOrdersTable, Order } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 const Checkout = () => {
@@ -26,6 +26,12 @@ const Checkout = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate form fields
+    if (!name.trim() || !email.trim() || !phone.trim()) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    
     if (cart.length === 0) {
       toast.error('Your cart is empty');
       return;
@@ -33,38 +39,70 @@ const Checkout = () => {
     
     try {
       setIsSubmitting(true);
+      console.log('Starting checkout process...');
+      
+      // First, check if the orders table exists and is accessible
+      console.log('Checking orders table...');
+      const tableCheck = await checkOrdersTable();
+      
+      if (!tableCheck.exists) {
+        console.error('Orders table does not exist or is not accessible:', tableCheck.error);
+        toast.error('Cannot connect to the order system. Please try again later or contact support.');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      console.log('Orders table is accessible, proceeding with order...');
       
       // Convert cart items to order items format
       const orderItems = cart.map(item => ({
-        productId: item.id,
-        productName: item.name,
-        quantity: item.quantity,
-        price: item.price
+        productId: item.id || '',
+        productName: item.name || 'Unknown Product',
+        quantity: item.quantity || 1,
+        price: item.price || 0
       }));
       
+      console.log('Prepared order items:', orderItems);
+      
       const orderData = {
-        customerName: name,
-        customerEmail: email,
-        customerPhone: phone, 
-        address: address,
+        customerName: name.trim(),
+        customerEmail: email.trim(),
+        customerPhone: phone.trim(), 
+        address: address.trim(),
         items: orderItems,
         totalAmount: total,
         status: 'pending' as Order['status'], // Explicitly type as Order['status']
         notes: paymentMethod === 'now' ? 'Paid via MoMo' : 'Pay on delivery'
       };
       
-      const { data, error } = await saveOrder(orderData);
+      console.log('Submitting order...');
       
-      if (error) {
-        throw error;
+      // Call saveOrder with better error handling
+      try {
+        const { data, error } = await saveOrder(orderData);
+        
+        if (error) {
+          console.error('Error saving order:', error);
+          toast.error(`Failed to place order: ${error.message || 'Database error'}`);
+          setIsSubmitting(false);
+          return; // Exit early on error
+        }
+        
+        console.log('Order saved successfully');
+        clearCart();
+        setSubmitted(true);
+        toast.success('Order placed successfully!');
+      } catch (saveError) {
+        console.error('Exception during order save:', saveError);
+        toast.error('An unexpected error occurred while saving your order');
+        setIsSubmitting(false);
+        return;
       }
-      
-      clearCart();
-      setSubmitted(true);
-      toast.success('Order placed successfully!');
     } catch (error) {
       console.error('Error placing order:', error);
-      toast.error('Failed to place order. Please try again.');
+      // Show more specific error message if possible
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      toast.error(`Failed to place order: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
