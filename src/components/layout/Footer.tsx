@@ -15,9 +15,9 @@ const Footer = () => {
               <div className="flex items-center gap-2">
                 <motion.img 
                   whileHover={{ scale: 1.05 }}
-                  src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825970/Koneys_Logo_pfrnkh.png" 
+                  src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825970/Koneys_Logo_white_pfrnkh.png" 
                   alt="Koney's Vet Hospital Logo" 
-                  className="h-10" 
+                  className="h-14 brightness-0 invert" 
                 />
               </div>
               <p className="text-gray-300">

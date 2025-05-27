@@ -59,7 +59,7 @@ const Navbar = () => {
             transition={{ duration: 0.5 }}
             src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825970/Koneys_Logo_pfrnkh.png" 
             alt="Koney's Vet Hospital Logo" 
-            className={`${scrolled ? 'h-10' : 'h-14'} transition-all duration-300`} 
+            className={`${scrolled ? 'h-12' : 'h-16'} transition-all duration-300`} 
           />
         </Link>
 

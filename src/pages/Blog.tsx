@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
+import PageHeader from '@/components/ui/PageHeader';
 import { getAllPosts, urlFor, Post } from '../lib/sanity';
 
 const Blog = () => {
@@ -41,8 +42,14 @@ const Blog = () => {
 
   return (
     <MainLayout>
+      <PageHeader
+        title="Our Blog"
+        description="Stay updated with the latest veterinary news, pet care tips, and stories from Koney's Veterinary Hospital."
+        bgImage="https://images.unsplash.com/photo-1583336663277-620dc1996580?auto=format&fit=crop&w=2000&q=80"
+        breadcrumbs={[{ label: 'Blog', path: '/blog' }]}
+      />
       <div className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-center mb-12 text-primary">Our Blog</h1>
+
         
         {loading ? (
           <div className="flex justify-center">

@@ -21,8 +21,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       {/* Background Image with Overlay */}
       <motion.div 
         initial={{ opacity: 0, scale: 1 }}
-        animate={{ opacity: 0.3, scale: 1.05 }}
-        transition={{ duration: 2.5, ease: 'easeOut' }}
+        animate={{ opacity: 0.3, scale: 1.1 }}
+        transition={{ duration: 8, ease: 'easeOut', repeat: Infinity, repeatType: 'reverse' }}
         className="absolute inset-0 bg-cover bg-center" 
         style={{ backgroundImage: `url(${bgImage})` }}
       ></motion.div>

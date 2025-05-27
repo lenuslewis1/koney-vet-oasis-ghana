@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/button';
 
 const steps = [
   {
-    icon: Calendar,
-    title: 'Book Appointment',
-    description: 'Schedule an appointment online or call our reception desk.'
+    icon: Phone,
+    title: 'Call Us',
+    description: 'Call our reception desk at 053 373 4385 to schedule an appointment.'
   },
   {
     icon: ClipboardCheck,

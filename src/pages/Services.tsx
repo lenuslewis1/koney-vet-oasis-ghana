@@ -78,11 +78,11 @@ const Services = () => {
                         Schedule a visit with our veterinary specialists for your pet's needs.
                       </p>
                     </div>
-                    <Link to="/appointment">
+                    <Link to="tel:+233533734385">
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button className="bg-vet-teal hover:bg-vet-blue text-white rounded-full px-6 py-6 flex items-center gap-2">
-                          <Calendar className="h-5 w-5" />
-                          <span className="text-lg">Book Appointment</span>
+                          <Phone className="h-5 w-5" />
+                          <span className="text-lg">Call Us</span>
                         </Button>
                       </motion.div>
                     </Link>
@@ -167,10 +167,10 @@ const Services = () => {
           
           <div className="mt-16 text-center">
             <AnimatedElement variant="fadeIn" delay={0.5}>
-              <Link to="/appointment">
+              <Link to="tel:+233533734385">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button className="bg-vet-blue hover:bg-vet-teal text-white rounded-full px-8 py-6 text-lg">
-                    Book Your Appointment Now
+                    Call Us Now
                   </Button>
                 </motion.div>
               </Link>

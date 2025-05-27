@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedElement } from '@/components/ui/AnimatedElement';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
@@ -36,6 +36,7 @@ const testimonials = [
 
 const EnhancedTestimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const autoScrollTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const nextTestimonial = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
@@ -43,6 +44,32 @@ const EnhancedTestimonials = () => {
 
   const prevTestimonial = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length);
+  };
+
+  useEffect(() => {
+    // Start auto-scrolling
+    autoScrollTimerRef.current = setInterval(() => {
+      nextTestimonial();
+    }, 5000); // Change testimonial every 5 seconds
+
+    // Clean up timer when component unmounts
+    return () => {
+      if (autoScrollTimerRef.current) {
+        clearInterval(autoScrollTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Pause auto-scrolling when user interacts with controls
+  const handleManualNavigation = (callback: () => void) => {
+    if (autoScrollTimerRef.current) {
+      clearInterval(autoScrollTimerRef.current);
+    }
+    callback();
+    // Restart auto-scrolling after user interaction
+    autoScrollTimerRef.current = setInterval(() => {
+      nextTestimonial();
+    }, 5000);
   };
 
   return (
@@ -67,7 +94,7 @@ const EnhancedTestimonials = () => {
               <motion.button 
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={prevTestimonial}
+                onClick={() => handleManualNavigation(prevTestimonial)}
                 className="bg-white/10 hover:bg-white/20 p-3 rounded-full"
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -75,7 +102,7 @@ const EnhancedTestimonials = () => {
               <motion.button 
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={nextTestimonial}
+                onClick={() => handleManualNavigation(nextTestimonial)}
                 className="bg-white/10 hover:bg-white/20 p-3 rounded-full"
               >
                 <ChevronRight className="h-5 w-5" />
@@ -88,9 +115,9 @@ const EnhancedTestimonials = () => {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentIndex}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
                   className="bg-white rounded-lg p-8 text-vet-dark shadow-xl relative h-full"
                 >

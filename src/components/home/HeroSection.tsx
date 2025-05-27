@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { motion, useAnimation } from 'framer-motion';
 import { AnimatedElement } from '@/components/ui/AnimatedElement';
 import { useEffect } from 'react';
-import { Calendar, ArrowRight } from 'lucide-react';
+import { Phone, ArrowRight } from 'lucide-react';
 
 const HeroSection = () => {
   const backgroundControls = useAnimation();
@@ -63,11 +63,11 @@ const HeroSection = () => {
             
             <AnimatedElement variant="slideUp" delay={0.6}>
               <div className="flex flex-col sm:flex-row gap-4 mt-8">
-                <Link to="/appointment">
+                <Link to="tel:+233533734385">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Button size="lg" className="bg-vet-coral hover:bg-vet-coral/90 text-white rounded-full px-6 flex items-center gap-2">
-                      <Calendar className="h-5 w-5" />
-                      <span>Book Appointment</span>
+                      <Phone className="h-5 w-5" />
+                      <span>Call Us</span>
                     </Button>
                   </motion.div>
                 </Link>
