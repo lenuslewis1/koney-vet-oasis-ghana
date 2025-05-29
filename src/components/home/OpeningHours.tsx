@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const hours = [
-  { day: 'Monday - Friday', hours: '8:00 AM - 7:00 PM' },
-  { day: 'Saturday', hours: '9:00 AM - 5:00 PM' },
-  { day: 'Sunday', hours: '10:00 AM - 2:00 PM' },
-  { day: 'Holidays', hours: 'Emergency Services Only' },
+  { day: 'Monday - Friday', hours: '8:00 AM - 5:00 PM' },
+  { day: 'Saturday', hours: '8:00 AM - 5:00 PM' },
+  { day: 'Sunday', hours: 'Closed' },
+  { day: 'Holidays', hours: '8:00 AM - 5:00 PM' },
 ];
 
 const OpeningHours = () => {
@@ -27,7 +27,7 @@ const OpeningHours = () => {
                   className="bg-white p-3 rounded-lg shadow-xl relative z-10 overflow-hidden"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1591326303148-d4c7778a6754?auto=format&fit=crop&w=1000&q=80" 
+                    src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526046/_MG_2315_wec57m.jpg" 
                     alt="Veterinary clinic reception" 
                     className="rounded-md w-full h-[400px] object-cover"
                   />

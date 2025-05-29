@@ -42,7 +42,7 @@ const TestimonialsSection = () => {
   };
 
   return (
-    <section className="py-16 bg-vet-light">
+    <section className="py-16 bg-teal">
       <div className="container-custom">
         <SectionHeading
           title="What Our Clients Say"

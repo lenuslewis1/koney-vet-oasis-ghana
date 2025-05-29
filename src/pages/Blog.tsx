@@ -99,7 +99,32 @@ const Blog = () => {
             ))}
           </div>
         )}
+        
       </div>
+      
+      {/* CTA Section */}
+      <section className="bg-vet-teal text-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to give your pet the best care?</h2>
+          <p className="text-xl mb-8 max-w-3xl mx-auto">
+            Book an appointment today and experience the Koney's Veterinary difference. Our team is here to provide exceptional care for your beloved pets.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              to="/appointment"
+              className="bg-white text-vet-teal hover:bg-gray-100 font-semibold py-3 px-8 rounded-full transition-colors duration-300 inline-block text-center"
+            >
+              Book Appointment
+            </Link>
+            <Link 
+              to="/contact"
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-vet-teal font-semibold py-3 px-8 rounded-full transition-colors duration-300 inline-block text-center"
+            >
+              Contact Us
+            </Link>
+          </div>
+        </div>
+      </section>
     </MainLayout>
   );
 };

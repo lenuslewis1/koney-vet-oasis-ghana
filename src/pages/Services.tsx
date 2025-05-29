@@ -37,7 +37,7 @@ const Services = () => {
       <PageHeader
         title="Our Services"
         description="Comprehensive veterinary care for your beloved pets"
-        bgImage="https://images.unsplash.com/photo-1582798358481-d199fb7347bb?auto=format&fit=crop&w=2000&q=80"
+        bgImage="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526044/_MG_2122_svr52z.jpg"
         breadcrumbs={[{ label: 'Services', path: '/services' }]}
       />
       

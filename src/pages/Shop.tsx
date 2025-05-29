@@ -60,7 +60,7 @@ const Shop = () => {
       <PageHeader
         title="Pet Shop"
         description="Quality products for your furry friends"
-        bgImage="https://images.unsplash.com/photo-1597843786411-a7fa8ad44a95?auto=format&fit=crop&w=2000&q=80"
+        bgImage="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748531489/_MG_2274_b5iwmy.jpg"
       />
       
       <section className="py-16">

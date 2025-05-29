@@ -55,7 +55,7 @@ const AboutSection = () => {
           <div className="order-1 lg:order-2">
             <div className="relative">
               <img 
-                src="https://images.unsplash.com/photo-1566847438217-76e82d383f84?auto=format&fit=crop&w=800&q=80"
+                src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825784/_MG_2419_wasgbi.jpg"
                 alt="Veterinarian with a dog"
                 className="rounded-lg shadow-lg w-full object-cover"
               />

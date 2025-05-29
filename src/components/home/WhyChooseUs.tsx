@@ -63,7 +63,7 @@ const WhyChooseUs = () => {
                   className="bg-white p-3 rounded-lg shadow-xl relative z-10"
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=800&q=80" 
+                    src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825781/_MG_2479_lojmf6.jpg" 
                     alt="Veterinarian caring for pet" 
                     className="rounded-md w-full h-[300px] object-cover"
                   />

@@ -11,42 +11,63 @@ const teamMembers = [
     id: 1,
     name: 'Dr. Samuel Koney',
     role: 'Founder & Lead Veterinarian',
-    image: 'https://randomuser.me/api/portraits/men/32.jpg',
+    image: 'https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825784/_MG_2419_wasgbi.jpg',
     bio: 'Dr. Koney founded the hospital in 2010 after practicing for 15 years. He specializes in small animal medicine and surgery.',
   },
   {
     id: 2,
     name: 'Dr. Abena Mensah',
     role: 'Senior Veterinarian',
-    image: 'https://randomuser.me/api/portraits/women/68.jpg',
+    image: 'https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825782/_MG_2360_kwud6f.jpg',
     bio: 'With over 10 years of experience, Dr. Mensah specializes in avian and exotic pet medicine.',
   },
   {
     id: 3,
     name: 'Dr. Kwame Nkrumah',
     role: 'Veterinary Surgeon',
-    image: 'https://randomuser.me/api/portraits/men/75.jpg',
+    image: 'https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825783/_MG_2183_rescny.jpg',
     bio: 'Dr. Nkrumah is our surgical specialist, with particular expertise in orthopedic procedures.',
   },
   {
     id: 4,
     name: 'Akosua Boateng',
     role: 'Veterinary Nurse',
-    image: 'https://randomuser.me/api/portraits/women/17.jpg',
+    image: 'https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748531489/_MG_2275_fvv69y.jpg',
     bio: 'Akosua has been with us since our founding and leads our nursing team with compassion and expertise.',
   },
   {
     id: 5,
     name: 'Kofi Adu',
     role: 'Pet Groomer',
-    image: 'https://randomuser.me/api/portraits/men/42.jpg',
+    image: 'https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748531489/_MG_2257_uf5age.jpg',
     bio: 'Kofi is a certified pet groomer with a special talent for handling anxious pets.',
   },
   {
     id: 6,
     name: 'Ama Darko',
     role: 'Practice Manager',
-    image: 'https://randomuser.me/api/portraits/women/26.jpg',
+    image: 'https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748531490/_MG_2152_hateck.jpg',
+    bio: 'Ama ensures that the hospital runs smoothly, coordinating our team and managing operations.',
+  },
+  {
+    id: 4,
+    name: 'Akosua Boateng',
+    role: 'Veterinary Nurse',
+    image: 'https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825782/_MG_2461_k0ax0y.jpg',
+    bio: 'Akosua has been with us since our founding and leads our nursing team with compassion and expertise.',
+  },
+  {
+    id: 5,
+    name: 'Kofi Adu',
+    role: 'Pet Groomer',
+    image: 'https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526045/_MG_2218_cze6jq.jpg',
+    bio: 'Kofi is a certified pet groomer with a special talent for handling anxious pets.',
+  },
+  {
+    id: 6,
+    name: 'Ama Darko',
+    role: 'Practice Manager',
+    image: 'https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526046/_MG_2223_fkxcna.jpg',
     bio: 'Ama ensures that the hospital runs smoothly, coordinating our team and managing operations.',
   },
 ];
@@ -57,7 +78,7 @@ const About = () => {
       <PageHeader
         title="About Us"
         description="Meet our dedicated team providing exceptional veterinary care since 2010"
-        bgImage="https://images.unsplash.com/photo-1485833077593-4278bba3f11f?auto=format&fit=crop&w=2000&q=80"
+        bgImage="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825781/_MG_2479_lojmf6.jpg"
         breadcrumbs={[{ label: 'About Us', path: '/about' }]}
       />
       
@@ -74,8 +95,8 @@ const About = () => {
                     className="bg-white p-3 rounded-lg shadow-xl relative z-10"
                   >
                     <img 
-                      src="https://images.unsplash.com/photo-1605152276897-4f618f831968?auto=format&fit=crop&w=1200&q=80"
-                      alt="Koney's Veterinary Hospital building"
+                      src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1747825781/_MG_2479_lojmf6.jpg"
+                      alt="Koney's Veterinary Hospital building" 
                       className="rounded-md w-full h-[400px] object-cover"
                     />
                   </motion.div>
