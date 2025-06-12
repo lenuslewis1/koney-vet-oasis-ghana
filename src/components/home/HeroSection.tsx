@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { AnimatedElement } from "@/components/ui/AnimatedElement";
 import { Phone, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { motion, useAnimation } from "framer-motion";
+import { motion, useAnimation } from 'framer-motion';
 
 const carouselImages = [
   "https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526048/_MG_2339_sw833f.jpg",
