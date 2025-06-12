@@ -51,7 +51,13 @@ const AdminLayout = () => {
         <div className="h-16 flex items-center justify-center border-b">
           <h1 className="text-xl font-bold text-gray-800">Pet Shop Admin</h1>
         </div>
-        <nav className="mt-6 flex flex-col h-[calc(100vh-4rem)]">
+        <button
+          onClick={handleLogout}
+          className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 border-b w-full"
+        >
+          <LogOut className="w-5 h-5 mr-3" /> Logout
+        </button>
+        <nav className="mt-2 flex flex-col h-[calc(100vh-6rem)]">
           <div className="flex-1">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
@@ -69,12 +75,6 @@ const AdminLayout = () => {
               );
             })}
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 border-t w-full"
-          >
-            <LogOut className="w-5 h-5 mr-3" /> Logout
-          </button>
         </nav>
       </aside>
 

@@ -50,14 +50,23 @@ function ProtectedRoute() {
   const location = useLocation();
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
+    let mounted = true;
+    const getSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (!mounted) return;
+      setUser(data.session?.user ?? null);
       setLoading(false);
     };
-    getUser();
-    const { data: listener } = supabase.auth.onAuthStateChange(() => getUser());
+    getSession();
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (!mounted) return;
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
     return () => {
+      mounted = false;
       listener.subscription.unsubscribe();
     };
   }, []);

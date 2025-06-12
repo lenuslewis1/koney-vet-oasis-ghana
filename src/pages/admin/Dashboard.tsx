@@ -2,6 +2,22 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getSanityBlogs } from "@/lib/sanityBlogs";
 import { Package, ShoppingCart, FileText, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
+
+const COLORS = ["#2563eb", "#facc15", "#22c55e", "#ef4444"];
+const STATUS_LABELS = ["pending", "processing", "completed", "cancelled"];
 
 const Dashboard = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -9,6 +25,7 @@ const Dashboard = () => {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -44,11 +61,101 @@ const Dashboard = () => {
     fetchAll();
   }, []);
 
+  // Analytics: Orders per day (last 7 days)
+  const ordersPerDay = (() => {
+    const days: { date: string; count: number }[] = [];
+    const now = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      const dateStr = d.toLocaleDateString();
+      days.push({ date: dateStr, count: 0 });
+    }
+    orders.forEach((order) => {
+      const d = new Date(order.created_at).toLocaleDateString();
+      const found = days.find((day) => day.date === d);
+      if (found) found.count++;
+    });
+    return days;
+  })();
+
+  // Analytics: Order status distribution
+  const statusCounts = STATUS_LABELS.map((status) => ({
+    name: status.charAt(0).toUpperCase() + status.slice(1),
+    value: orders.filter((o) => o.status === status).length,
+  }));
+
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-gray-900">
-        Admin Dashboard Overview
-      </h1>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Admin Dashboard Overview
+        </h1>
+        <div className="flex gap-2">
+          <button
+            className="btn-primary"
+            onClick={() => navigate("/admin/products")}
+          >
+            Add Product
+          </button>
+          <button
+            className="btn-secondary"
+            onClick={() => navigate("/admin/blog")}
+          >
+            Add Blog Post
+          </button>
+          <button
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-5 rounded-lg shadow transition-custom"
+            onClick={() => navigate("/admin/orders")}
+          >
+            View Orders
+          </button>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Orders per day bar chart */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Orders Per Day (Last 7 Days)
+          </h2>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={ordersPerDay}>
+              <XAxis dataKey="date" fontSize={12} />
+              <YAxis allowDecimals={false} fontSize={12} />
+              <Tooltip />
+              <Bar dataKey="count" fill="#2563eb" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        {/* Order status pie chart */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Order Status Distribution
+          </h2>
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={statusCounts}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                label
+              >
+                {statusCounts.map((entry, idx) => (
+                  <Cell
+                    key={`cell-${idx}`}
+                    fill={COLORS[idx % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Legend />
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
       {error ? (
         <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg shadow-sm">
           {error}
