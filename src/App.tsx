@@ -51,35 +51,71 @@ function ProtectedRoute() {
 
   useEffect(() => {
     let mounted = true;
+
     const getSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    };
-    getSession();
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error("Session error:", error);
+          if (!mounted) return;
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
         if (!mounted) return;
-        setUser(session?.user ?? null);
+
+        if (session) {
+          setUser(session.user);
+        } else {
+          setUser(null);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error getting session:", error);
+        if (!mounted) return;
+        setUser(null);
         setLoading(false);
       }
-    );
+    };
+
+    getSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+
+      if (event === "SIGNED_OUT") {
+        setUser(null);
+      } else if (session) {
+        setUser(session.user);
+      }
+      setLoading(false);
+    });
+
     return () => {
       mounted = false;
-      listener.subscription.unsubscribe();
+      subscription.unsubscribe();
     };
   }, []);
 
-  if (loading)
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         Loading...
       </div>
     );
+  }
+
   if (!user || user.email !== ADMIN_EMAIL) {
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
+
   return <Outlet />;
 }
 
@@ -172,7 +208,7 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path="/blog/:slug"
+          path="/blog/:id"
           element={
             <PageTransition>
               <BlogPost />

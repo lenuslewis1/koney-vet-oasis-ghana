@@ -6,8 +6,7 @@ const client = createClient({
   dataset: "production",
   apiVersion: "2023-01-01",
   useCdn: false,
-  token:
-    "skHFRG1IgTLfQ8tQWG5U0jU5YABtxUUsNBuMfqnkxVna0lqaKvke5qy69QUpMm84fYeLDGBhUW9QdNlQqZnnAFi5lo02GQhlXgI9jTuIMf2aEp1eHYWWnytmvBXZnTFXz3eXSTUW3Icy2Tc5ljvIMXzHYhTvBW8A0Qcjcq5SgsF5czRhGGeb",
+  token: "",
 });
 
 export async function getSanityBlogs() {

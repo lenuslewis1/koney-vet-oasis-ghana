@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import MainLayout from "../components/layout/MainLayout";
 import { supabase } from "@/integrations/supabase/client";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 // import { Tables } from "@/integrations/supabase/types"; // Assuming you have this types file
 
 // type BlogsTable = Tables<"blogs">; // Define a type for your 'blogs' table
@@ -16,36 +18,59 @@ interface BlogPost {
 
 const BlogPost = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPost = async () => {
-      if (!id) return;
+      if (!id) {
+        setError("No blog post ID provided");
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError(null);
+
       try {
+        console.log("Fetching blog post with ID:", id);
+
         const { data, error } = await supabase
-          .from("blogs") // No explicit generic type here, rely on client typing
+          .from("blogs")
           .select("*")
           .eq("id", id)
           .single();
 
         if (error) {
+          console.error("Supabase error:", error);
           throw error;
         }
-        setPost((data as unknown as BlogPost) || null);
+
+        if (!data) {
+          console.error("No data returned for blog post ID:", id);
+          throw new Error("Blog post not found");
+        }
+
+        console.log("Successfully fetched blog post:", data);
+        setPost(data as BlogPost);
       } catch (err: any) {
         console.error("Error fetching post:", err);
         setError(err?.message || "Failed to fetch blog post");
+        // Redirect to blog list after a short delay if the post is not found
+        if (err?.message === "Blog post not found") {
+          setTimeout(() => {
+            navigate("/blog");
+          }, 3000);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchPost();
-  }, [id]);
+  }, [id, navigate]);
 
   const formatDate = (dateString: string): string => {
     if (!dateString) return "";
@@ -65,8 +90,11 @@ const BlogPost = () => {
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-4 py-12 flex justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <div className="container mx-auto px-4 py-12">
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            <p className="text-gray-600">Loading blog post...</p>
+          </div>
         </div>
       </MainLayout>
     );
@@ -77,11 +105,16 @@ const BlogPost = () => {
       <MainLayout>
         <div className="container mx-auto px-4 py-12 text-center">
           <h1 className="text-3xl font-bold mb-4">Blog Post Not Found</h1>
-          <p>
-            The blog post you are looking for does not exist or has been
-            removed.
+          <p className="text-gray-600 mb-4">
+            {error ||
+              "The blog post you are looking for does not exist or has been removed."}
           </p>
-          {error && <div className="text-red-500 mt-2">Error: {error}</div>}
+          <button
+            onClick={() => navigate("/blog")}
+            className="text-primary hover:underline"
+          >
+            ← Return to Blog
+          </button>
         </div>
       </MainLayout>
     );
@@ -112,7 +145,7 @@ const BlogPost = () => {
         </header>
 
         <div className="prose prose-lg max-w-none">
-          <p>{post.body}</p>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-200">

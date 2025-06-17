@@ -1,12 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-
-// These would typically be stored in environment variables
-// For development purposes, they're included directly here
-const supabaseUrl = 'https://hplmldtcdyrcvkynqlul.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhwbG1sZHRjZHlyY3ZreW5xbHVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc3NTgxNjksImV4cCI6MjA2MzMzNDE2OX0.1705UnUaBE0PnsdZQlPFj9m-e95_J9shfweAmhum408';
-
-// Basic Supabase client configuration with minimal options
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Import the supabase client from the centralized location
+import { supabase } from '@/integrations/supabase/client';
 
 // Type definitions for orders
 export type OrderItem = {
