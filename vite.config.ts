@@ -12,11 +12,10 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react({
       babel: {
-        plugins: ['@babel/plugin-transform-react-jsx']
-      }
+        plugins: ["@babel/plugin-transform-react-jsx"],
+      },
     }),
-    mode === 'development' &&
-    componentTagger(),
+    mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -27,24 +26,24 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': [
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-slot',
-            'class-variance-authority',
-            'clsx',
-            'tailwind-merge'
-          ]
-        }
-      }
+          "react-vendor": ["react", "react-dom"],
+          "ui-vendor": [
+            "@radix-ui/react-alert-dialog",
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-slot",
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+          ],
+        },
+      },
     },
-    target: 'es2015',
-    sourcemap: true
+    target: "es2015",
+    sourcemap: true,
   },
   optimizeDeps: {
     esbuildOptions: {
-      target: 'es2015'
-    }
-  }
+      target: "es2015",
+    },
+  },
 }));
