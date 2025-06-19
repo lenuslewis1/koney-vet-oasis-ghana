@@ -1,9 +1,10 @@
+import * as React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AnimatedElement } from "@/components/ui/AnimatedElement";
 import { Phone, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { motion, useAnimation } from 'framer-motion';
+import { motion, useAnimation } from "framer-motion";
 
 const carouselImages = [
   "https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526048/_MG_2339_sw833f.jpg",
@@ -14,7 +15,7 @@ const carouselImages = [
   "https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526046/_MG_2263_maovcx.jpg",
   "https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526044/_MG_2169_di9o8p.jpg",
   "https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526044/_MG_2158_tnoqlk.jpg",
-  "https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526044/_MG_2122_svr52z.jpg"
+  "https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748526044/_MG_2122_svr52z.jpg",
 ];
 
 const HeroSection = () => {
@@ -34,14 +35,14 @@ const HeroSection = () => {
     controls.start({
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: "easeOut" }
+      transition: { duration: 0.8, ease: "easeOut" },
     });
   }, [controls]);
 
   return (
     <div className="relative text-white py-32 md:py-48 lg:py-64 min-h-[90vh] flex items-center">
       {/* Background Image */}
-      <motion.div 
+      <motion.div
         key={currentImage}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -52,7 +53,7 @@ const HeroSection = () => {
           backgroundImage: `url(${carouselImages[currentImage]})`,
         }}
       />
-      
+
       {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/40" />
 
@@ -64,13 +65,15 @@ const HeroSection = () => {
             onClick={() => setCurrentImage(idx)}
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.9 }}
-            className={`inline-block w-3 h-3 rounded-full transition-all duration-300 ${idx === currentImage ? 'bg-white' : 'bg-white/50'}`}
+            className={`inline-block w-3 h-3 rounded-full transition-all duration-300 ${
+              idx === currentImage ? "bg-white" : "bg-white/50"
+            }`}
           />
         ))}
       </div>
       <div className="container-custom relative z-10">
         <div className="max-w-3xl mx-auto text-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={controls}
             className="space-y-6"

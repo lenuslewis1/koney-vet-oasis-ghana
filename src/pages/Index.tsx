@@ -1,18 +1,17 @@
-
-import MainLayout from '@/components/layout/MainLayout';
-import HeroSection from '@/components/home/HeroSection';
-import ServicesOverview from '@/components/home/ServicesOverview';
-import WhyChooseUs from '@/components/home/WhyChooseUs';
-import AppointmentProcess from '@/components/home/AppointmentProcess';
-import EmergencyServices from '@/components/home/EmergencyServices';
-import OpeningHours from '@/components/home/OpeningHours';
-import EnhancedTestimonials from '@/components/home/EnhancedTestimonials';
-import AboutSection from '@/components/home/AboutSection';
-import FeaturedProducts from '@/components/home/FeaturedProducts';
-import FeaturedBlogPosts from '@/components/home/FeaturedBlogPosts';
-import CtaSection from '@/components/home/CtaSection';
-import RecentBlogPosts from '@/components/home/RecentBlogPosts';
-
+import * as React from "react";
+import MainLayout from "@/components/layout/MainLayout";
+import HeroSection from "@/components/home/HeroSection";
+import ServicesOverview from "@/components/home/ServicesOverview";
+import WhyChooseUs from "@/components/home/WhyChooseUs";
+import AppointmentProcess from "@/components/home/AppointmentProcess";
+import EmergencyServices from "@/components/home/EmergencyServices";
+import OpeningHours from "@/components/home/OpeningHours";
+import EnhancedTestimonials from "@/components/home/EnhancedTestimonials";
+import AboutSection from "@/components/home/AboutSection";
+import FeaturedProducts from "@/components/home/FeaturedProducts";
+import FeaturedBlogPosts from "@/components/home/FeaturedBlogPosts";
+import CtaSection from "@/components/home/CtaSection";
+import RecentBlogPosts from "@/components/home/RecentBlogPosts";
 
 const Index = () => {
   return (

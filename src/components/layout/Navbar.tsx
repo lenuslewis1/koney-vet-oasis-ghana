@@ -1,10 +1,10 @@
-
-import { useState, useEffect } from 'react';
-import { useCart } from '@/context/CartContext';
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Menu, X, ShoppingCart, Phone } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { useCart } from "@/context/CartContext";
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Menu, X, ShoppingCart, Phone } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const { cart } = useCart();
@@ -22,9 +22,9 @@ const Navbar = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -33,33 +33,35 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Services', path: '/services' },
-    { name: 'Shop', path: '/shop' },
-    { name: 'Blog', path: '/blog' },
-    { name: 'Contact', path: '/contact' },
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Services", path: "/services" },
+    { name: "Shop", path: "/shop" },
+    { name: "Blog", path: "/blog" },
+    { name: "Contact", path: "/contact" },
   ];
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+      transition={{ type: "spring", stiffness: 100, damping: 20 }}
       className={`bg-white sticky top-0 z-40 transition-all duration-300 ${
-        scrolled ? 'shadow-md py-2' : 'py-4'
+        scrolled ? "shadow-md py-2" : "py-4"
       }`}
     >
       <div className="container-custom flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <motion.img 
+          <motion.img
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748536499/koneys_veterinary_hospital_ndikyl.png" 
-            alt="Koney's Vet Hospital Logo" 
-            className={`${scrolled ? 'h-12' : 'h-16'} transition-all duration-300`} 
+            src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748536499/koneys_veterinary_hospital_ndikyl.png"
+            alt="Koney's Vet Hospital Logo"
+            className={`${
+              scrolled ? "h-12" : "h-16"
+            } transition-all duration-300`}
           />
         </Link>
 
@@ -75,13 +77,15 @@ const Navbar = () => {
               <Link
                 to={link.path}
                 className={`text-vet-dark hover:text-vet-teal font-medium transition-custom relative group ${
-                  location.pathname === link.path ? 'text-vet-teal' : ''
+                  location.pathname === link.path ? "text-vet-teal" : ""
                 }`}
               >
                 {link.name}
-                <motion.span 
+                <motion.span
                   className={`absolute -bottom-1 left-0 h-0.5 bg-vet-teal transition-all duration-300 ${
-                    location.pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'
+                    location.pathname === link.path
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
                   }`}
                 />
               </Link>
@@ -90,7 +94,7 @@ const Navbar = () => {
         </nav>
 
         {/* Action Buttons */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.6, duration: 0.5 }}
@@ -106,11 +110,15 @@ const Navbar = () => {
           </Link>
           <Link to="/shop/cart">
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button variant="outline" size="icon" className="relative rounded-full border-vet-teal text-vet-teal hover:bg-vet-teal hover:text-white">
+              <Button
+                variant="outline"
+                size="icon"
+                className="relative rounded-full border-vet-teal text-vet-teal hover:bg-vet-teal hover:text-white"
+              >
                 <ShoppingCart className="h-5 w-5" />
                 <AnimatePresence>
                   {cartCount > 0 && (
-                    <motion.span 
+                    <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       exit={{ scale: 0 }}
@@ -126,10 +134,10 @@ const Navbar = () => {
         </motion.div>
 
         {/* Mobile Menu Button */}
-        <motion.button 
+        <motion.button
           whileTap={{ scale: 0.9 }}
-          className="md:hidden" 
-          onClick={toggleMenu} 
+          className="md:hidden"
+          onClick={toggleMenu}
           aria-label="Toggle menu"
         >
           <AnimatePresence mode="wait">
@@ -161,9 +169,9 @@ const Navbar = () => {
       {/* Mobile Navigation */}
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
+            animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="md:hidden bg-white border-t overflow-hidden"
@@ -185,13 +193,13 @@ const Navbar = () => {
                   </Link>
                 </motion.div>
               ))}
-              <motion.div 
+              <motion.div
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: navLinks.length * 0.1, duration: 0.3 }}
                 className="flex flex-col gap-3 pt-2 border-t"
               >
-                <Link 
+                <Link
                   to="/shop/cart"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center gap-2 text-vet-dark"
@@ -199,7 +207,7 @@ const Navbar = () => {
                   <ShoppingCart className="h-5 w-5" />
                   <span>Cart ({cartCount})</span>
                 </Link>
-                <Link 
+                <Link
                   to="tel:+233533734385"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center gap-2 text-vet-dark"

@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+import React from "react";
+import { motion } from "framer-motion";
+import { ReactNode } from "react";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -22,8 +23,8 @@ const PageTransition = ({ children }: PageTransitionProps) => {
   };
 
   const pageTransition = {
-    type: 'tween',
-    ease: 'anticipate',
+    type: "tween",
+    ease: "anticipate",
     duration: 0.5,
   };
 
