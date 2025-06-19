@@ -13,6 +13,17 @@ import type { Tables } from "@/integrations/supabase/types";
 import ProductForm from "@/components/admin/ProductForm";
 import PageTransition from "@/components/layout/PageTransition";
 import { motion } from "framer-motion";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
 type Product = Tables<"products">;
 
@@ -23,6 +34,7 @@ const Products = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   // Fetch products from Supabase
   const fetchProducts = async () => {
@@ -48,15 +60,91 @@ const Products = () => {
 
   // Delete product
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
-
     try {
+      // 1. Find all order_items with this product_id
+      const { data: orderItems, error: fetchOrderItemsError } = await supabase
+        .from("order_items")
+        .select("id, order_id")
+        .eq("product_id", id);
+      if (fetchOrderItemsError) {
+        setError(`Error fetching order items: ${fetchOrderItemsError.message}`);
+        console.error("Error fetching order items:", fetchOrderItemsError);
+        return;
+      }
+      const orderIds = [
+        ...new Set((orderItems || []).map((item) => item.order_id)),
+      ];
+      if (orderIds.length > 0) {
+        // 2. Fetch the status of all related orders
+        const { data: orders, error: fetchOrdersError } = await supabase
+          .from("orders")
+          .select("id, status")
+          .in("id", orderIds);
+        if (fetchOrdersError) {
+          setError(
+            `Error fetching related orders: ${fetchOrdersError.message}`
+          );
+          console.error("Error fetching related orders:", fetchOrdersError);
+          return;
+        }
+        // 3. Check if any order is not completed
+        const hasNonCompleted = (orders || []).some(
+          (order) => order.status !== "completed"
+        );
+        if (hasNonCompleted) {
+          setError(
+            "This product is referenced in an order that is not completed. Please complete the order(s) before deleting this product."
+          );
+          return;
+        }
+      }
+      // 4. Delete all order_items for these orders (all completed)
+      if (orderIds.length > 0) {
+        const { error: deleteOrderItemsError } = await supabase
+          .from("order_items")
+          .delete()
+          .in("order_id", orderIds);
+        if (deleteOrderItemsError) {
+          setError(
+            `Error deleting order items: ${deleteOrderItemsError.message}`
+          );
+          console.error("Error deleting order items:", deleteOrderItemsError);
+          return;
+        }
+      }
+      // 5. Delete all orders with these IDs (all completed)
+      if (orderIds.length > 0) {
+        const { error: deleteOrdersError } = await supabase
+          .from("orders")
+          .delete()
+          .in("id", orderIds);
+        if (deleteOrdersError) {
+          setError(`Error deleting orders: ${deleteOrdersError.message}`);
+          console.error("Error deleting orders:", deleteOrdersError);
+          return;
+        }
+      }
+      // 6. Delete any remaining order_items for this product (in case there are any not linked to an order)
+      const { error: orderItemsError } = await supabase
+        .from("order_items")
+        .delete()
+        .eq("product_id", id);
+      if (orderItemsError) {
+        setError(`Error deleting order items: ${orderItemsError.message}`);
+        console.error("Error deleting order items:", orderItemsError);
+        return;
+      }
+      // 7. Delete the product
       const { error } = await supabase.from("products").delete().eq("id", id);
-
-      if (error) throw error;
+      if (error) {
+        setError(`Error deleting product: ${error.message}`);
+        console.error("Error deleting product:", error);
+        return;
+      }
       await fetchProducts(); // Refresh the list
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete product");
+      console.error("Unexpected error deleting product:", err);
     }
   };
 
@@ -227,7 +315,7 @@ const Products = () => {
                           <Edit size={18} />
                         </button>
                         <button
-                          onClick={() => handleDelete(product.id)}
+                          onClick={() => setProductToDelete(product)}
                           className="text-red-600 hover:text-red-900"
                         >
                           <Trash2 size={18} />
@@ -264,6 +352,36 @@ const Products = () => {
             </div>
           </div>
         )}
+
+        {/* Confirmation Modal */}
+        <AlertDialog
+          open={!!productToDelete}
+          onOpenChange={(open) => !open && setProductToDelete(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Product</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete <b>{productToDelete?.name}</b>?
+                This will also remove it from any existing orders and order
+                items. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={async () => {
+                  if (productToDelete) {
+                    await handleDelete(productToDelete.id);
+                    setProductToDelete(null);
+                  }
+                }}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </PageTransition>
   );

@@ -7,6 +7,7 @@ export type OrderItem = {
   productName: string;
   quantity: number;
   price: number;
+  product_image_url?: string;
 };
 
 export type Order = {
@@ -163,6 +164,7 @@ export const saveOrder = async (order: Omit<Order, 'id' | 'createdAt'>) => {
         order_id: orderId,
         product_id: item.productId || '00000000-0000-0000-0000-000000000000', // Fallback UUID if productId is missing
         product_name: item.productName || 'Unknown Product', // Add product name for easy identification
+        product_image_url: item.product_image_url || '', // Add product image URL
         quantity: item.quantity,
         price_at_purchase: Number(item.price.toFixed(2))
       }));

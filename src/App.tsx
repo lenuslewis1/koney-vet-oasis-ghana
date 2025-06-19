@@ -37,6 +37,7 @@ import Products from "./pages/admin/Products";
 import Orders from "./pages/admin/Orders";
 import BlogAdmin from "./pages/admin/BlogAdmin";
 import Login from "./pages/admin/Login";
+import Settings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -227,7 +228,7 @@ const AnimatedRoutes = () => {
             <Route path="products" element={<Products />} />
             <Route path="orders" element={<Orders />} />
             <Route path="blog" element={<BlogAdmin />} />
-            {/* Add more admin routes here */}
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Route>
 

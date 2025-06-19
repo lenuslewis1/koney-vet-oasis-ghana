@@ -59,7 +59,8 @@ const Checkout = () => {
         productId: item.id || '',
         productName: item.name || 'Unknown Product',
         quantity: item.quantity || 1,
-        price: item.price || 0
+        price: item.price || 0,
+        product_image_url: item.image || '' // Add image URL to order items
       }));
       
       console.log('Prepared order items:', orderItems);

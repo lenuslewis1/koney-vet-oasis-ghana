@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
@@ -5,6 +6,17 @@ import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import PageTransition from "@/components/layout/PageTransition";
 import { motion } from "framer-motion";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
 type Order = Tables<"orders">;
 type OrderItem = Tables<"order_items">;
@@ -19,7 +31,6 @@ const Orders = () => {
   const [orders, setOrders] = useState<OrderWithItems[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
 
   const fetchOrders = async () => {
@@ -127,18 +138,6 @@ const Orders = () => {
     }
   };
 
-  // Function to open delete modal
-  const openDeleteModal = (orderId: string) => {
-    setOrderToDelete(orderId);
-    setShowDeleteModal(true);
-  };
-
-  // Function to close delete modal
-  const closeDeleteModal = () => {
-    setOrderToDelete(null);
-    setShowDeleteModal(false);
-  };
-
   // Function to delete an order
   const handleDeleteOrder = async () => {
     if (!orderToDelete) return;
@@ -151,7 +150,6 @@ const Orders = () => {
       if (error) throw error;
       toast.success("Order deleted!");
       await fetchOrders();
-      closeDeleteModal();
     } catch (err: any) {
       setError(err?.message || "Failed to delete order");
       toast.error("Failed to delete order");
@@ -209,11 +207,11 @@ const Orders = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {Object.entries(groupOrdersByDay(orders)).map(
                   ([group, groupOrders]) => (
-                    <>
+                    <React.Fragment key={group}>
                       <tr>
                         <td
-                          colSpan={6}
-                          className="bg-gray-100 font-bold px-6 py-2"
+                          colSpan={7}
+                          className="bg-gray-200 text-lg font-bold px-6 py-3 border-b border-gray-300 text-gray-700 tracking-wide"
                         >
                           {group}
                         </td>
@@ -240,11 +238,39 @@ const Orders = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 text-sm">
-                            <ul className="list-disc pl-4">
+                            <ul className="list-none pl-0">
                               {order.items.map((item) => (
-                                <li key={item.id}>
-                                  {item.product?.name || "Product"} x{" "}
-                                  {item.quantity}
+                                <li
+                                  key={item.id}
+                                  className="flex items-center gap-3 mb-2"
+                                >
+                                  {item.product?.image_url ||
+                                  item.product_image_url ? (
+                                    <img
+                                      src={
+                                        item.product?.image_url ||
+                                        item.product_image_url
+                                      }
+                                      alt={
+                                        item.product?.name ||
+                                        item.product_name ||
+                                        "Product"
+                                      }
+                                      className="h-10 w-10 object-cover rounded border shadow-sm"
+                                    />
+                                  ) : (
+                                    <div className="h-10 w-10 flex items-center justify-center bg-gray-200 rounded border shadow-sm text-gray-400">
+                                      <span className="text-xs">No Image</span>
+                                    </div>
+                                  )}
+                                  <span className="font-semibold text-gray-900">
+                                    {item.product?.name ||
+                                      item.product_name ||
+                                      "Product"}
+                                  </span>
+                                  <span className="text-gray-600 ml-2">
+                                    x {item.quantity}
+                                  </span>
                                 </li>
                               ))}
                             </ul>
@@ -275,13 +301,14 @@ const Orders = () => {
                             )}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-500">
-                            {order.created_at
+                            {order.created_at &&
+                            !isNaN(new Date(order.created_at).getTime())
                               ? new Date(order.created_at).toLocaleString()
-                              : ""}
+                              : "N/A"}
                           </td>
                           <td className="px-6 py-4 text-right">
                             <button
-                              onClick={() => openDeleteModal(order.id)}
+                              onClick={() => setOrderToDelete(order.id)}
                               className="text-red-600 hover:text-red-900 disabled:opacity-50"
                               disabled={updatingId === order.id}
                               title="Delete order"
@@ -291,39 +318,39 @@ const Orders = () => {
                           </td>
                         </motion.tr>
                       ))}
-                    </>
+                    </React.Fragment>
                   )
                 )}
               </tbody>
             </table>
           </div>
         )}
-        {showDeleteModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
-              <h2 className="text-lg font-semibold mb-4">Delete Order</h2>
-              <p className="mb-6">
-                Are you sure you want to delete this order?
-              </p>
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={closeDeleteModal}
-                  className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300"
-                  disabled={updatingId === orderToDelete}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteOrder}
-                  className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
-                  disabled={updatingId === orderToDelete}
-                >
-                  {updatingId === orderToDelete ? "Deleting..." : "Delete"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Confirmation Modal */}
+        <AlertDialog
+          open={!!orderToDelete}
+          onOpenChange={(open) => !open && setOrderToDelete(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Order</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this order? This action cannot
+                be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={async () => {
+                  await handleDeleteOrder();
+                  setOrderToDelete(null);
+                }}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </PageTransition>
   );
