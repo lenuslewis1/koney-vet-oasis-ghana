@@ -39,7 +39,11 @@ export default defineConfig(({ mode }) => ({
       },
     },
     target: "es2015",
-    sourcemap: true,
+    sourcemap: mode === "development",
+    minify: "esbuild",
+    outDir: "dist",
+    emptyOutDir: true,
+    chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
     esbuildOptions: {
