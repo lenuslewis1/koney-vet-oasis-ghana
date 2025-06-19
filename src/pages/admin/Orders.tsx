@@ -1,20 +1,19 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
-import { 
-  Loader2, 
-  Trash2, 
-  Package, 
-  Calendar, 
-  DollarSign, 
-  Hash, 
-  Grid3X3, 
+import {
+  Loader2,
+  Trash2,
+  Package,
+  Calendar,
+  DollarSign,
+  Hash,
+  Grid3X3,
   List,
   User,
   Mail,
   Phone,
-  MapPin
+  MapPin,
 } from "lucide-react";
 import { toast } from "sonner";
 import PageTransition from "@/components/layout/PageTransition";
@@ -31,9 +30,22 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 
-type Order = Tables<"orders">;
-type OrderItem = Tables<"order_items">;
-type Product = Tables<"products">;
+interface Product {
+  id: string;
+  name: string;
+  image_url?: string;
+  price: number;
+}
+
+interface OrderItem {
+  id: string;
+  product_id: string;
+  order_id: string;
+  quantity: number;
+  price_at_purchase: number;
+  product_name?: string;
+  product?: Product;
+}
 
 interface OrderWithItems {
   id: string;
@@ -47,7 +59,7 @@ interface OrderWithItems {
   items: (OrderItem & { product?: Product })[];
 }
 
-type ViewMode = 'grid' | 'list';
+type ViewMode = "grid" | "list";
 
 const Orders = () => {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -58,8 +70,8 @@ const Orders = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     // Get saved view preference from sessionStorage
-    const saved = sessionStorage.getItem('ordersViewMode');
-    return (saved as ViewMode) || 'grid';
+    const saved = sessionStorage.getItem("ordersViewMode");
+    return (saved as ViewMode) || "grid";
   });
 
   const openDeleteModal = (orderId: string) => {
@@ -71,41 +83,47 @@ const Orders = () => {
     setShowDeleteModal(false);
     setOrderToDelete(null);
   };
-
   const fetchOrders = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch orders
+      // Fetch orders with their items and product details in a single query
       const { data: ordersData, error: ordersError } = await supabase
         .from("orders")
-        .select("*")
+        .select(
+          `
+          *,
+          items:order_items (
+            *,
+            product:products (
+              *
+            )
+          )
+        `
+        )
         .order("created_at", { ascending: false });
+
       if (ordersError) throw ordersError;
-      
-      // Fetch order items for all orders
-      const { data: itemsData, error: itemsError } = await supabase
-        .from("order_items")
-        .select("*");
-      if (itemsError) throw itemsError;
-      
-      // Fetch products for item details
-      const { data: productsData } = await supabase
-        .from("products")
-        .select("*");
-      
-      // Map items to orders
+
+      // Transform the data to match our interface
       const ordersWithItems: OrderWithItems[] = (ordersData || []).map(
-        (order) => {
-          const items = (itemsData || [])
-            .filter((item) => item.order_id === order.id)
-            .map((item) => ({
-              ...item,
-              product: productsData?.find((p) => p.id === item.product_id),
-            }));
-          return { ...order, items };
-        }
+        (order: any) => ({
+          ...order,
+          items: order.items.map((item: any) => ({
+            id: item.id,
+            product_id: item.product_id,
+            order_id: item.order_id,
+            quantity: item.quantity,
+            price_at_purchase: item.price_at_purchase,
+            product_name: item.product?.name,
+            product: item.product,
+          })),
+        })
       );
+
+      console.log("Raw orders data:", ordersData);
+      console.log("Transformed orders:", ordersWithItems);
+
       setOrders(ordersWithItems);
     } catch (err: any) {
       setError(err?.message || "Failed to fetch orders");
@@ -182,16 +200,60 @@ const Orders = () => {
   // Handle view mode change
   const handleViewModeChange = (mode: ViewMode) => {
     setViewMode(mode);
-    sessionStorage.setItem('ordersViewMode', mode);
+    sessionStorage.setItem("ordersViewMode", mode);
   };
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
+  // Function to render item names
+  const renderItemsList = (items: OrderWithItems["items"]) => {
+    if (items.length === 0) {
+      return (
+        <div className="text-gray-500 italic flex items-center gap-2">
+          <Package className="h-4 w-4" />
+          <span>No items in order</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-2">
+        {items.map((item) => (
+          <div key={item.id} className="flex items-center gap-2 text-sm">
+            <div className="w-12 h-12 rounded-md border border-gray-200 overflow-hidden flex-shrink-0">
+              {item.product?.image_url ? (
+                <img
+                  src={item.product.image_url}
+                  alt={item.product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                  <Package className="h-4 w-4 text-gray-400" />
+                </div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-gray-900 truncate">
+                {item.product?.name || item.product_name || "Unknown Product"}
+              </p>
+              <div className="flex items-center gap-2 text-gray-500">
+                <span>Qty: {item.quantity}</span>
+                <span>•</span>
+                <span>GH₵{item.price_at_purchase.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   // Grid View Component
   const GridView = () => (
-    <motion.div 
+    <motion.div
       key="grid"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -226,7 +288,7 @@ const Orders = () => {
                 <Trash2 size={16} />
               </button>
             </div>
-            
+
             <div className="flex items-center gap-2 mb-3">
               <Calendar className="h-4 w-4 text-gray-500" />
               <span className="text-sm text-gray-600">
@@ -239,14 +301,16 @@ const Orders = () => {
                 value={order.status}
                 onChange={(e) => handleStatusChange(order.id, e.target.value)}
                 disabled={updatingId === order.id}
-                className={`text-xs font-medium px-3 py-1 rounded-full border ${getStatusColor(order.status)} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className={`text-xs font-medium px-3 py-1 rounded-full border ${getStatusColor(
+                  order.status
+                )} focus:outline-none focus:ring-2 focus:ring-blue-500`}
               >
                 <option value="pending">Pending</option>
                 <option value="processing">Processing</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
               </select>
-              
+
               {updatingId === order.id && (
                 <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
               )}
@@ -255,13 +319,17 @@ const Orders = () => {
 
           {/* Customer Info */}
           <div className="px-6 py-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900 mb-1">{order.customer_name}</h3>
+            <h3 className="font-semibold text-gray-900 mb-1">
+              {order.customer_name}
+            </h3>
             <p className="text-sm text-gray-600 mb-1">{order.customer_email}</p>
             {order.customer_phone && (
               <p className="text-sm text-gray-600">{order.customer_phone}</p>
             )}
             {order.shipping_address && (
-              <p className="text-sm text-gray-500 mt-2 line-clamp-2">{order.shipping_address}</p>
+              <p className="text-sm text-gray-500 mt-2 line-clamp-2">
+                {order.shipping_address}
+              </p>
             )}
           </div>
 
@@ -271,42 +339,8 @@ const Orders = () => {
               <Package className="h-4 w-4" />
               Items ({order.items.length})
             </h4>
-            
-            <div className="space-y-3">
-              {order.items.map((item) => (
-                <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  {/* Product Image */}
-                  <div className="flex-shrink-0">
-                    {item.product?.image_url ? (
-                      <img
-                        src={item.product.image_url}
-                        alt={item.product.name || "Product"}
-                        className="w-16 h-16 object-cover rounded-md border border-gray-200"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
-                        <Package className="h-6 w-6 text-gray-400" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Product Details */}
-                  <div className="flex-1 min-w-0">
-                    <h5 className="font-medium text-gray-900 truncate">
-                      {item.product?.name || item.product_name || "Unknown Product"}
-                    </h5>
-                    <div className="flex items-center gap-4 mt-1">
-                      <span className="text-sm text-gray-600">
-                        Qty: {item.quantity}
-                      </span>
-                      <span className="text-sm font-medium text-gray-900">
-                        GH₵{item.price_at_purchase?.toFixed(2) || "0.00"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+
+            {renderItemsList(order.items)}
           </div>
 
           {/* Order Total */}
@@ -328,7 +362,7 @@ const Orders = () => {
 
   // List View Component
   const ListView = () => (
-    <motion.div 
+    <motion.div
       key="list"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -386,7 +420,6 @@ const Orders = () => {
                     </div>
                   </div>
                 </td>
-
                 {/* Customer */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
@@ -409,48 +442,72 @@ const Orders = () => {
                       )}
                     </div>
                   </div>
-                </td>
-
+                </td>{" "}
                 {/* Items */}
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <Package className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm font-medium text-gray-900">
-                      {order.items.length} item{order.items.length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                  <div className="mt-1 flex -space-x-2">
-                    {order.items.slice(0, 3).map((item, index) => (
-                      <div key={item.id} className="relative">
-                        {item.product?.image_url ? (
-                          <img
-                            src={item.product.image_url}
-                            alt={item.product.name || "Product"}
-                            className="w-8 h-8 rounded-full border-2 border-white object-cover"
-                            title={item.product.name || "Product"}
-                          />
-                        ) : (
-                          <div className="w-8 h-8 bg-gray-200 rounded-full border-2 border-white flex items-center justify-center">
-                            <Package className="h-3 w-3 text-gray-400" />
-                          </div>
-                        )}
+                  <div className="max-w-sm">
+                    {order.items.length === 0 ? (
+                      <div className="text-gray-500 italic flex items-center gap-2">
+                        <Package className="h-4 w-4" />
+                        <span>No items in order</span>
                       </div>
-                    ))}
-                    {order.items.length > 3 && (
-                      <div className="w-8 h-8 bg-gray-100 rounded-full border-2 border-white flex items-center justify-center">
-                        <span className="text-xs text-gray-600">+{order.items.length - 3}</span>
-                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Package className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm font-medium text-gray-900">
+                            {order.items.length} item
+                            {order.items.length !== 1 ? "s" : ""}
+                          </span>
+                        </div>
+                        <div className="space-y-2">
+                          {order.items.map((item) => (
+                            <div
+                              key={item.id}
+                              className="flex items-center gap-2 bg-gray-50 p-2 rounded"
+                            >
+                              <div className="w-8 h-8 rounded border border-gray-200 overflow-hidden flex-shrink-0">
+                                {item.product?.image_url ? (
+                                  <img
+                                    src={item.product.image_url}
+                                    alt={item.product.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                    <Package className="h-3 w-3 text-gray-400" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {item.product?.name ||
+                                    item.product_name ||
+                                    "Unknown Product"}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  Qty: {item.quantity} • GH₵
+                                  {item.price_at_purchase.toFixed(2)}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
                     )}
                   </div>
                 </td>
-
                 {/* Status */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <select
                     value={order.status}
-                    onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                    onChange={(e) =>
+                      handleStatusChange(order.id, e.target.value)
+                    }
                     disabled={updatingId === order.id}
-                    className={`text-xs font-medium px-3 py-1 rounded-full border ${getStatusColor(order.status)} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    className={`text-xs font-medium px-3 py-1 rounded-full border ${getStatusColor(
+                      order.status
+                    )} focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   >
                     <option value="pending">Pending</option>
                     <option value="processing">Processing</option>
@@ -458,7 +515,6 @@ const Orders = () => {
                     <option value="cancelled">Cancelled</option>
                   </select>
                 </td>
-
                 {/* Total */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-2">
@@ -468,7 +524,6 @@ const Orders = () => {
                     </span>
                   </div>
                 </td>
-
                 {/* Actions */}
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">
@@ -499,18 +554,22 @@ const Orders = () => {
         <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Orders Management</h1>
-              <p className="text-gray-600 mt-1">Manage and track all customer orders</p>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Orders Management
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Manage and track all customer orders
+              </p>
             </div>
-            
+
             {/* View Toggle */}
             <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
               <button
-                onClick={() => handleViewModeChange('grid')}
+                onClick={() => handleViewModeChange("grid")}
                 className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
-                  viewMode === 'grid'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                  viewMode === "grid"
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
                 title="Grid View"
               >
@@ -518,11 +577,11 @@ const Orders = () => {
                 <span className="hidden sm:inline">Grid</span>
               </button>
               <button
-                onClick={() => handleViewModeChange('list')}
+                onClick={() => handleViewModeChange("list")}
                 className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
-                  viewMode === 'list'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                  viewMode === "list"
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
                 }`}
                 title="List View"
               >
@@ -545,12 +604,16 @@ const Orders = () => {
           ) : orders.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg shadow-sm">
               <Package className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
-              <p className="text-gray-500">Orders will appear here once customers start placing them.</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No orders found
+              </h3>
+              <p className="text-gray-500">
+                Orders will appear here once customers start placing them.
+              </p>
             </div>
           ) : (
             <AnimatePresence mode="wait">
-              {viewMode === 'grid' ? <GridView /> : <ListView />}
+              {viewMode === "grid" ? <GridView /> : <ListView />}
             </AnimatePresence>
           )}
         </div>
@@ -564,7 +627,8 @@ const Orders = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Order</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete this order? This action cannot be undone.
+                Are you sure you want to delete this order? This action cannot
+                be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
