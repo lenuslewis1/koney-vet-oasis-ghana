@@ -1,11 +1,12 @@
 [build]
-  command = "npm run build"
+  command = "npm install sharp && npm run build"
   publish = "dist"
   functions = "netlify/functions"
   
 [build.environment]
   NODE_VERSION = "20.9.0"
   NPM_VERSION = "10.1.0"
+  SHARP_IGNORE_GLOBAL_LIBVIPS = "1"
 
 [[redirects]]
   from = "/api/*"
