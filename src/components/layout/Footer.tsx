@@ -1,8 +1,14 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Phone, MapPin, Mail, Instagram, Facebook, Twitter } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { AnimatedElement } from '@/components/ui/AnimatedElement';
+import { Link } from "react-router-dom";
+import {
+  Phone,
+  MapPin,
+  Mail,
+  Instagram,
+  Facebook,
+  Twitter,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { AnimatedElement } from "@/components/ui/AnimatedElement";
 
 const Footer = () => {
   return (
@@ -13,47 +19,48 @@ const Footer = () => {
           <AnimatedElement variant="fadeIn" delay={0.1}>
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <motion.img 
+                <motion.img
                   whileHover={{ scale: 1.05 }}
-                  src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748536540/koneys_veterinary_hospital_white_g85n05.png" 
-                  alt="Koney's Vet Hospital Logo" 
-                  className="h-20 brightness-0 invert" 
+                  src="https://res.cloudinary.com/dzmvzdcpx/image/upload/v1748536540/koneys_veterinary_hospital_white_g85n05.png"
+                  alt="Koney's Vet Hospital Logo"
+                  className="h-20 brightness-0 invert"
                 />
               </div>
               <p className="text-gray-300">
-                Providing exceptional veterinary care for your beloved pets in Accra, Ghana since 2010.
+                Providing exceptional veterinary care for your beloved pets in
+                Accra, Ghana since 2010.
               </p>
               <div className="flex items-center gap-4 pt-2">
-                <motion.a 
-                  whileHover={{ scale: 1.2, color: '#00A7B5' }} 
-                  href="https://www.facebook.com/profile.php?id=100079096176304" 
+                <motion.a
+                  whileHover={{ scale: 1.2, color: "#00A7B5" }}
+                  href="https://www.facebook.com/profile.php?id=100079096176304"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-custom"
                 >
                   <Facebook className="h-5 w-5" />
                 </motion.a>
-                <motion.a 
-                  whileHover={{ scale: 1.2, color: '#00A7B5' }} 
-                  href="https://www.instagram.com/koney_s_veterinary_hospital/" 
+                <motion.a
+                  whileHover={{ scale: 1.2, color: "#00A7B5" }}
+                  href="https://www.instagram.com/koney_s_veterinary_hospital/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-custom"
                 >
                   <Instagram className="h-5 w-5" />
                 </motion.a>
-                <motion.a 
-                  whileHover={{ scale: 1.2, color: '#00A7B5' }} 
-                  href="https://x.com/koneysvet20" 
+                <motion.a
+                  whileHover={{ scale: 1.2, color: "#00A7B5" }}
+                  href="https://x.com/koneysvet20"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-custom"
                 >
                   <Twitter className="h-5 w-5" />
                 </motion.a>
-                <motion.a 
-                  whileHover={{ scale: 1.2, color: '#00A7B5' }} 
-                  href="https://www.tiktok.com/@koneysvethospital" 
+                <motion.a
+                  whileHover={{ scale: 1.2, color: "#00A7B5" }}
+                  href="https://www.tiktok.com/@koneysvethospital"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-custom"
@@ -67,39 +74,71 @@ const Footer = () => {
           {/* Quick Links */}
           <AnimatedElement variant="fadeIn" delay={0.2}>
             <div className="space-y-4">
-              <h3 className="font-display font-semibold text-lg">Quick Links</h3>
+              <h3 className="font-display font-semibold text-lg">
+                Quick Links
+              </h3>
               <ul className="space-y-2">
                 <li>
-                  <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                    <Link to="/" className="text-gray-300 hover:text-vet-teal transition-custom block">
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Link
+                      to="/"
+                      className="text-gray-300 hover:text-vet-teal transition-custom block"
+                    >
                       Home
                     </Link>
                   </motion.div>
                 </li>
                 <li>
-                  <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                    <Link to="/about" className="text-gray-300 hover:text-vet-teal transition-custom block">
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Link
+                      to="/about"
+                      className="text-gray-300 hover:text-vet-teal transition-custom block"
+                    >
                       About Us
                     </Link>
                   </motion.div>
                 </li>
                 <li>
-                  <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                    <Link to="/services" className="text-gray-300 hover:text-vet-teal transition-custom block">
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Link
+                      to="/services"
+                      className="text-gray-300 hover:text-vet-teal transition-custom block"
+                    >
                       Services
                     </Link>
                   </motion.div>
                 </li>
                 <li>
-                  <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                    <Link to="/shop" className="text-gray-300 hover:text-vet-teal transition-custom block">
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Link
+                      to="/shop"
+                      className="text-gray-300 hover:text-vet-teal transition-custom block"
+                    >
                       Pet Shop
                     </Link>
                   </motion.div>
                 </li>
                 <li>
-                  <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                    <Link to="/contact" className="text-gray-300 hover:text-vet-teal transition-custom block">
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Link
+                      to="/contact"
+                      className="text-gray-300 hover:text-vet-teal transition-custom block"
+                    >
                       Contact Us
                     </Link>
                   </motion.div>
@@ -111,12 +150,17 @@ const Footer = () => {
           {/* Services */}
           <AnimatedElement variant="fadeIn" delay={0.3}>
             <div className="space-y-4">
-              <h3 className="font-display font-semibold text-lg">Our Services</h3>
+              <h3 className="font-display font-semibold text-lg">
+                Our Services
+              </h3>
               <ul className="space-y-2">
                 <li>
-                  <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                    <Link 
-                      to="/services#vaccinations" 
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Link
+                      to="/services#vaccinations"
                       className="text-gray-300 hover:text-vet-teal transition-custom block"
                     >
                       Vaccinations
@@ -124,9 +168,12 @@ const Footer = () => {
                   </motion.div>
                 </li>
                 <li>
-                  <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                    <Link 
-                      to="/services#surgery" 
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Link
+                      to="/services#surgery"
                       className="text-gray-300 hover:text-vet-teal transition-custom block"
                     >
                       Surgery
@@ -134,9 +181,12 @@ const Footer = () => {
                   </motion.div>
                 </li>
                 <li>
-                  <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                    <Link 
-                      to="/services#deworming" 
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Link
+                      to="/services#deworming"
                       className="text-gray-300 hover:text-vet-teal transition-custom block"
                     >
                       Deworming
@@ -144,9 +194,12 @@ const Footer = () => {
                   </motion.div>
                 </li>
                 <li>
-                  <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                    <Link 
-                      to="/services#grooming" 
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Link
+                      to="/services#grooming"
                       className="text-gray-300 hover:text-vet-teal transition-custom block"
                     >
                       Pet Grooming
@@ -154,9 +207,12 @@ const Footer = () => {
                   </motion.div>
                 </li>
                 <li>
-                  <motion.div whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                    <Link 
-                      to="/services#consultation" 
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <Link
+                      to="/services#consultation"
                       className="text-gray-300 hover:text-vet-teal transition-custom block"
                     >
                       Consultations
@@ -184,10 +240,10 @@ const Footer = () => {
                   </span>
                 </li>
                 <li>
-                  <motion.a 
+                  <motion.a
                     whileHover={{ x: 5 }}
                     transition={{ type: "spring", stiffness: 400 }}
-                    href="tel:+233533734385" 
+                    href="tel:+233533734385"
                     className="flex items-center gap-3 text-gray-300 hover:text-vet-teal transition-custom"
                   >
                     <motion.div
@@ -200,10 +256,10 @@ const Footer = () => {
                   </motion.a>
                 </li>
                 <li>
-                  <motion.a 
+                  <motion.a
                     whileHover={{ x: 5 }}
                     transition={{ type: "spring", stiffness: 400 }}
-                    href="mailto:info@koneysvet.com" 
+                    href="mailto:info@koneysvet.com"
                     className="flex items-center gap-3 text-gray-300 hover:text-vet-teal transition-custom"
                   >
                     <motion.div
@@ -222,7 +278,10 @@ const Footer = () => {
 
         <AnimatedElement variant="fadeIn" delay={0.5}>
           <div className="border-t border-gray-700 mt-10 pt-6 text-center text-gray-400 text-sm">
-            <p>© {new Date().getFullYear()} Koney's Veterinary Hospital. All rights reserved.</p>
+            <p>
+              © {new Date().getFullYear()} Koney's Veterinary Hospital. All
+              rights reserved.
+            </p>
           </div>
         </AnimatedElement>
       </div>

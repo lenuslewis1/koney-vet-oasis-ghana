@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useParams, Link } from "react-router-dom";

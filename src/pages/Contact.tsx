@@ -1,4 +1,6 @@
-import React from "react";
+import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { saveContactMessage } from "@/lib/supabase";
 import MainLayout from "@/components/layout/MainLayout";
 import PageHeader from "@/components/ui/PageHeader";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -6,9 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
-import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { saveContactMessage } from "@/lib/supabase";
 
 const Contact = () => {
   const { toast } = useToast();

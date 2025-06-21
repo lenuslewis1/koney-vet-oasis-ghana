@@ -1,5 +1,3 @@
-import React from "react";
-import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import { useState } from "react";
@@ -7,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { saveOrder, checkOrdersTable, Order } from "@/lib/supabase";
+import MainLayout from "@/components/layout/MainLayout";
 import { toast } from "sonner";
 
 const Checkout = () => {

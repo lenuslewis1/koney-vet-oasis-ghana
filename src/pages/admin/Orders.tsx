@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -93,11 +92,9 @@ const Orders = () => {
         .select(
           `
           *,
-          items:order_items (
+          order_items:order_items (
             *,
-            product:products (
-              *
-            )
+            product:products (id,name,image_url)
           )
         `
         )
@@ -109,7 +106,7 @@ const Orders = () => {
       const ordersWithItems: OrderWithItems[] = (ordersData || []).map(
         (order: any) => ({
           ...order,
-          items: order.items.map((item: any) => ({
+          items: (order.order_items || []).map((item: any) => ({
             id: item.id,
             product_id: item.product_id,
             order_id: item.order_id,

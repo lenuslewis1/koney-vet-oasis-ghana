@@ -10,11 +10,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react({
-      babel: {
-        plugins: ["@babel/plugin-transform-react-jsx"],
-      },
-    }),
+    react(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {

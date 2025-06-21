@@ -1,8 +1,7 @@
-
-import React from 'react';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import TopHeader from './TopHeader';
+import React from "react";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import TopHeader from "./TopHeader";
 
 interface MainLayoutProps {
   children: React.ReactNode;
