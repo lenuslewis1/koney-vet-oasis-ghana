@@ -86,27 +86,46 @@ const Orders = () => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch orders with their items and product details in a single query
+      // First, fetch all orders
       const { data: ordersData, error: ordersError } = await supabase
         .from("orders")
-        .select(
-          `
-          *,
-          order_items:order_items (
-            *,
-            product:products (id,name,image_url)
-          )
-        `
-        )
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (ordersError) throw ordersError;
-
+      
+      if (!ordersData || ordersData.length === 0) {
+        setOrders([]);
+        setLoading(false);
+        return;
+      }
+      
+      // Then fetch order items for these orders
+      const orderIds = ordersData.map(order => order.id);
+      const { data: orderItemsData, error: orderItemsError } = await supabase
+        .from("order_items")
+        .select(`
+          *,
+          product:products (id, name, image_url)
+        `)
+        .in("order_id", orderIds);
+        
+      if (orderItemsError) throw orderItemsError;
+      
+      // Group order items by order_id
+      const orderItemsMap = (orderItemsData || []).reduce((acc, item) => {
+        if (!acc[item.order_id]) {
+          acc[item.order_id] = [];
+        }
+        acc[item.order_id].push(item);
+        return acc;
+      }, {});
+      
       // Transform the data to match our interface
       const ordersWithItems: OrderWithItems[] = (ordersData || []).map(
         (order: any) => ({
           ...order,
-          items: (order.order_items || []).map((item: any) => ({
+          items: (orderItemsMap[order.id] || []).map((item: any) => ({
             id: item.id,
             product_id: item.product_id,
             order_id: item.order_id,
@@ -119,6 +138,7 @@ const Orders = () => {
       );
 
       console.log("Raw orders data:", ordersData);
+      console.log("Order items data:", orderItemsData);
       console.log("Transformed orders:", ordersWithItems);
 
       setOrders(ordersWithItems);
