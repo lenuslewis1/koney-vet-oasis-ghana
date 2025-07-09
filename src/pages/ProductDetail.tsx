@@ -103,7 +103,7 @@ const ProductDetail = () => {
               <img
                 src={product.image_url}
                 alt={product.name}
-                className="w-full h-[400px] object-cover"
+                className="w-full max-h-[500px] object-contain bg-white mx-auto"
               />
             </div>
 

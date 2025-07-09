@@ -29,6 +29,7 @@ import ProductDetail from "./pages/ProductDetail";
 // Using relative paths for Blog and BlogPost components
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Media from "./pages/Media";
 
 // Admin pages
 import AdminLayout from "./components/layouts/AdminLayout";
@@ -214,6 +215,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <BlogPost />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/media"
+          element={
+            <PageTransition>
+              <Media />
             </PageTransition>
           }
         />
