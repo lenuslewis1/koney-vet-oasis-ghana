@@ -231,24 +231,29 @@ const BlogPost = () => {
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
-                  h1: ({ children }) => <h1 className="text-3xl font-bold text-gray-900 mb-6 mt-8">{children}</h1>,
-                  h2: ({ children }) => <h2 className="text-2xl font-bold text-gray-800 mb-4 mt-8">{children}</h2>,
-                  h3: ({ children }) => <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">{children}</h3>,
-                  p: ({ children }) => <p className="text-gray-700 leading-relaxed mb-4">{children}</p>,
+                  h1: ({ children }) => <h1 className="text-3xl font-black text-gray-900 mb-6 mt-8 tracking-tight">{children}</h1>,
+                  h2: ({ children }) => <h2 className="text-2xl font-black text-gray-800 mb-4 mt-8 tracking-tight">{children}</h2>,
+                  h3: ({ children }) => <h3 className="text-xl font-extrabold text-gray-800 mb-3 mt-6">{children}</h3>,
+                  h4: ({ children }) => <h4 className="text-lg font-extrabold text-gray-700 mb-2 mt-4">{children}</h4>,
+                  h5: ({ children }) => <h5 className="text-base font-extrabold text-gray-700 mb-2 mt-4">{children}</h5>,
+                  h6: ({ children }) => <h6 className="text-sm font-extrabold text-gray-700 mb-2 mt-4">{children}</h6>,
+                  p: ({ children }) => <p className="text-gray-700 leading-relaxed mb-4 whitespace-pre-line text-base">{children}</p>,
                   blockquote: ({ children }) => (
-                    <blockquote className="border-l-4 border-primary bg-blue-50 pl-6 py-4 my-6 italic text-gray-700">
+                    <blockquote className="border-l-4 border-primary bg-blue-50 pl-6 py-4 my-6 italic text-gray-700 font-medium">
                       {children}
                     </blockquote>
                   ),
-                  ul: ({ children }) => <ul className="list-disc pl-6 mb-4 space-y-2">{children}</ul>,
-                  ol: ({ children }) => <ol className="list-decimal pl-6 mb-4 space-y-2">{children}</ol>,
-                  li: ({ children }) => <li className="text-gray-700">{children}</li>,
+                  ul: ({ children }) => <ul className="list-none pl-6 mb-4 space-y-2">{children}</ul>,
+                  ol: ({ children }) => <ol className="list-none pl-6 mb-4 space-y-2">{children}</ol>,
+                  li: ({ children }) => <li className="text-gray-700 flex gap-2"><span className="text-primary">•</span>{children}</li>,
                   code: ({ children }) => (
                     <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono text-gray-800">{children}</code>
                   ),
                   pre: ({ children }) => (
                     <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-6">{children}</pre>
                   ),
+                  strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
+                  em: ({ children }) => <em className="italic text-gray-700">{children}</em>,
                 }}
               >
                 {post.body}
