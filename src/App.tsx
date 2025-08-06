@@ -15,6 +15,8 @@ import {
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./components/layout/PageTransition";
 import { supabase } from "@/integrations/supabase/client";
+import { initEmailJS } from "./lib/emailService";
+import { debugEmailJSSetup } from "./utils/emailDebug";
 
 import Index from "./pages/Index";
 import About from "./pages/About";
@@ -256,6 +258,21 @@ const AnimatedRoutes = () => {
 };
 
 const App: React.FC = () => {
+  // Initialize EmailJS on app startup
+  React.useEffect(() => {
+    // Debug EmailJS configuration
+    const debugInfo = debugEmailJSSetup();
+    
+    if (debugInfo.hasPublicKey) {
+      const initialized = initEmailJS();
+      if (!initialized) {
+        console.error('❌ EmailJS initialization failed');
+      }
+    } else {
+      console.warn('⚠️ EmailJS not configured - emails will not be sent');
+    }
+  }, []);
+
   return (
     <React.Suspense
       fallback={

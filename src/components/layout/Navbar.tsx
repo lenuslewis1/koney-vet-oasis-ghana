@@ -94,27 +94,32 @@ const Navbar = () => {
           ))}
         </nav>
 
-        {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-          className="hidden md:flex items-center gap-3"
-        >
-          <Link to="tel:+233533734385" className="mr-2">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button className="bg-vet-teal hover:bg-vet-blue text-white rounded-full px-5 flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <span>Call Us</span>
-              </Button>
-            </motion.div>
-          </Link>
+        {/* Action Buttons & Cart */}
+        <div className="flex items-center gap-2">
+          {/* Call Us Button - Desktop Only */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+            className="hidden md:flex"
+          >
+            <Link to="tel:+233533734385">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button className="bg-vet-teal hover:bg-vet-blue text-white rounded-full px-5 flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  <span>Call Us</span>
+                </Button>
+              </motion.div>
+            </Link>
+          </motion.div>
+
+          {/* Cart Icon - Visible on all screen sizes */}
           <Link to="/shop/cart">
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
-                className="relative rounded-full border-vet-teal text-vet-teal hover:bg-vet-teal hover:text-white"
+                className="relative rounded-full"
               >
                 <ShoppingCart className="h-5 w-5" />
                 <AnimatePresence>
@@ -132,39 +137,39 @@ const Navbar = () => {
               </Button>
             </motion.div>
           </Link>
-        </motion.div>
 
-        {/* Mobile Menu Button */}
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          className="md:hidden"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          <AnimatePresence mode="wait">
-            {isMenuOpen ? (
-              <motion.div
-                key="close"
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <X className="h-6 w-6" />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="menu"
-                initial={{ rotate: 90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Menu className="h-6 w-6" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.button>
+          {/* Mobile Menu Button */}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            className="md:hidden"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            <AnimatePresence mode="wait">
+              {isMenuOpen ? (
+                <motion.div
+                  key="close"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <X className="h-6 w-6" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="menu"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Menu className="h-6 w-6" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -200,14 +205,7 @@ const Navbar = () => {
                 transition={{ delay: navLinks.length * 0.1, duration: 0.3 }}
                 className="flex flex-col gap-3 pt-2 border-t"
               >
-                <Link
-                  to="/shop/cart"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-2 text-vet-dark"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  <span>Cart ({cartCount})</span>
-                </Link>
+
                 <Link
                   to="tel:+233533734385"
                   onClick={() => setIsMenuOpen(false)}

@@ -102,7 +102,10 @@ const Checkout = () => {
         console.log("Order saved successfully");
         clearCart();
         setSubmitted(true);
-        toast.success("Order placed successfully!");
+        toast.success("Order placed successfully!", {
+          duration: 5000,
+          description: "We've received your order and will contact you soon."
+        });
       } catch (saveError) {
         console.error("Exception during order save:", saveError);
         toast.error("An unexpected error occurred while saving your order");

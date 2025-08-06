@@ -1,5 +1,6 @@
 // Import the supabase client from the centralized location
 import { supabase } from "@/integrations/supabase/client";
+import { sendOrderEmails, OrderEmailData } from "./emailService";
 
 // Type definitions for orders
 export type OrderItem = {
@@ -135,6 +136,42 @@ export const saveOrder = async (order: Omit<Order, "id" | "createdAt">) => {
     }
 
     console.log("Order saved successfully via RPC with ID:", data);
+    
+    // Send email notifications after successful order creation
+    try {
+      const emailData: OrderEmailData = {
+        orderId: data,
+        customerName: order.customerName.trim(),
+        customerEmail: order.customerEmail.trim(),
+        customerPhone: order.customerPhone?.trim(),
+        shippingAddress: order.address?.trim(),
+        totalAmount: Number(order.totalAmount.toFixed(2)),
+        items: order.items.map(item => ({
+          productName: item.productName || "Unknown Product",
+          quantity: item.quantity,
+          price: Number(item.price.toFixed(2))
+        })),
+        createdAt: new Date().toISOString()
+      };
+      
+      // Send admin email asynchronously - don't wait for completion to avoid blocking the response
+      sendOrderEmails(emailData).then((results) => {
+        console.log('Email notification results:', results);
+        
+        if (results.adminEmail) {
+          console.log('✅ Admin notification email sent successfully');
+        } else {
+          console.warn('⚠️ Failed to send admin notification email');
+        }
+      }).catch((emailError) => {
+        console.error('❌ Error sending admin notification email:', emailError);
+      });
+      
+    } catch (emailError) {
+      console.error('Error preparing email data:', emailError);
+      // Don't fail the order creation if email fails
+    }
+    
     return { data: { success: true, orderId: data }, error: null };
   } catch (error) {
     console.error("Error in saveOrder function:", error);

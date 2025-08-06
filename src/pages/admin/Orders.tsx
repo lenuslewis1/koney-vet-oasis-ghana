@@ -189,10 +189,10 @@ const Orders = () => {
     if (!orderToDelete) return;
     setUpdatingId(orderToDelete);
     try {
-      const { error } = await supabase
-        .from("orders")
-        .delete()
-        .eq("id", orderToDelete);
+      // Call the RPC function to delete the order and its items securely
+      const { error } = await supabase.rpc("delete_order", {
+        order_id_to_delete: orderToDelete,
+      });
       if (error) throw error;
       toast.success("Order deleted!");
       await fetchOrders();

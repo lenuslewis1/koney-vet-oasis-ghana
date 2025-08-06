@@ -4,9 +4,9 @@ import MainLayout from "../components/layout/MainLayout";
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-// import { Tables } from "@/integrations/supabase/types"; // Assuming you have this types file
-
-// type BlogsTable = Tables<"blogs">; // Define a type for your 'blogs' table
+import { ArrowLeft, Calendar, Share2, Twitter, Facebook, Linkedin, Copy, Clock } from "lucide-react";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 interface BlogPost {
   id: string;
@@ -87,13 +87,40 @@ const BlogPost = () => {
     }
   };
 
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied to clipboard!");
+    } catch (err) {
+      toast.error("Failed to copy link");
+    }
+  };
+
+  const estimateReadingTime = (text: string): number => {
+    const wordsPerMinute = 200;
+    const wordCount = text.split(/\s+/).length;
+    return Math.ceil(wordCount / wordsPerMinute);
+  };
+
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-            <p className="text-gray-600">Loading blog post...</p>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+          <div className="container mx-auto px-4 py-12">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center justify-center space-y-6 min-h-[400px]"
+            >
+              <div className="relative">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary"></div>
+                <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-r-primary/40 animate-pulse"></div>
+              </div>
+              <div className="text-center space-y-2">
+                <p className="text-lg font-medium text-gray-700">Loading blog post...</p>
+                <p className="text-sm text-gray-500">Please wait while we fetch the content</p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </MainLayout>
@@ -103,18 +130,30 @@ const BlogPost = () => {
   if (error || !post) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="text-3xl font-bold mb-4">Blog Post Not Found</h1>
-          <p className="text-gray-600 mb-4">
-            {error ||
-              "The blog post you are looking for does not exist or has been removed."}
-          </p>
-          <button
-            onClick={() => navigate("/blog")}
-            className="text-primary hover:underline"
-          >
-            ← Return to Blog
-          </button>
+        <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100">
+          <div className="container mx-auto px-4 py-12">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="max-w-2xl mx-auto text-center bg-white rounded-2xl shadow-xl p-8"
+            >
+              <div className="w-20 h-20 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
+                <span className="text-3xl">📄</span>
+              </div>
+              <h1 className="text-3xl font-bold mb-4 text-gray-900">Blog Post Not Found</h1>
+              <p className="text-gray-600 mb-8 leading-relaxed">
+                {error ||
+                  "The blog post you are looking for does not exist or has been removed. It might have been moved or deleted."}
+              </p>
+              <button
+                onClick={() => navigate("/blog")}
+                className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Return to Blog
+              </button>
+            </motion.div>
+          </div>
         </div>
       </MainLayout>
     );
@@ -122,100 +161,167 @@ const BlogPost = () => {
 
   return (
     <MainLayout>
-      <article className="container mx-auto px-4 py-12 max-w-4xl">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold mb-4 text-primary">{post.title}</h1>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+        {/* Back Navigation */}
+        <div className="bg-white border-b">
+          <div className="container mx-auto px-4 py-4">
+            <button
+              onClick={() => navigate("/blog")}
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-primary transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Blog
+            </button>
+          </div>
+        </div>
 
-          <div className="flex items-center mb-6">
-            {/* Author and Categories are not directly in Supabase 'blogs' table yet */}
-            <div>
-              <p className="text-sm text-gray-500">
-                {formatDate(post.published_at)}
+        <article className="container mx-auto px-4 py-8 max-w-4xl">
+          <motion.header 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-12"
+          >
+            {/* Title */}
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 leading-tight">
+              {post.title}
+            </h1>
+
+            {/* Meta Information */}
+            <div className="flex flex-wrap items-center gap-6 mb-8 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span>{formatDate(post.published_at)}</span>
+              </div>
+              {post.body && (
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>{estimateReadingTime(post.body)} min read</span>
+                </div>
+              )}
+            </div>
+
+            {/* Featured Image */}
+            {post.image_url && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="relative overflow-hidden rounded-2xl shadow-2xl mb-12"
+              >
+                <img
+                  src={post.image_url}
+                  alt={post.title}
+                  className="w-full h-auto object-cover"
+                  style={{ aspectRatio: '16/9' }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              </motion.div>
+            )}
+          </motion.header>
+
+          {/* Article Content */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="bg-white rounded-2xl shadow-lg p-8 md:p-12 mb-12"
+          >
+            <div className="prose prose-lg prose-blue max-w-none">
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  h1: ({ children }) => <h1 className="text-3xl font-bold text-gray-900 mb-6 mt-8">{children}</h1>,
+                  h2: ({ children }) => <h2 className="text-2xl font-bold text-gray-800 mb-4 mt-8">{children}</h2>,
+                  h3: ({ children }) => <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">{children}</h3>,
+                  p: ({ children }) => <p className="text-gray-700 leading-relaxed mb-4">{children}</p>,
+                  blockquote: ({ children }) => (
+                    <blockquote className="border-l-4 border-primary bg-blue-50 pl-6 py-4 my-6 italic text-gray-700">
+                      {children}
+                    </blockquote>
+                  ),
+                  ul: ({ children }) => <ul className="list-disc pl-6 mb-4 space-y-2">{children}</ul>,
+                  ol: ({ children }) => <ol className="list-decimal pl-6 mb-4 space-y-2">{children}</ol>,
+                  li: ({ children }) => <li className="text-gray-700">{children}</li>,
+                  code: ({ children }) => (
+                    <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono text-gray-800">{children}</code>
+                  ),
+                  pre: ({ children }) => (
+                    <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-6">{children}</pre>
+                  ),
+                }}
+              >
+                {post.body}
+              </ReactMarkdown>
+            </div>
+          </motion.div>
+
+          {/* Share Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="bg-white rounded-2xl shadow-lg p-8"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <Share2 className="w-6 h-6 text-primary" />
+              <h3 className="text-2xl font-bold text-gray-900">Share this article</h3>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                  post.title
+                )}&url=${encodeURIComponent(window.location.href)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-blue-400 hover:bg-blue-500 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+              >
+                <Twitter className="w-5 h-5" />
+                <span className="hidden sm:inline">Twitter</span>
+              </a>
+              
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                  window.location.href
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+              >
+                <Facebook className="w-5 h-5" />
+                <span className="hidden sm:inline">Facebook</span>
+              </a>
+              
+              <a
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+                  window.location.href
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-blue-800 hover:bg-blue-900 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+              >
+                <Linkedin className="w-5 h-5" />
+                <span className="hidden sm:inline">LinkedIn</span>
+              </a>
+              
+              <button
+                onClick={copyToClipboard}
+                className="flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+              >
+                <Copy className="w-5 h-5" />
+                <span className="hidden sm:inline">Copy Link</span>
+              </button>
+            </div>
+            
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-gray-600 text-center">
+                💡 <strong>Found this helpful?</strong> Share it with others who might benefit from this information!
               </p>
             </div>
-          </div>
-
-          {post.image_url && (
-            <img
-              src={post.image_url}
-              alt={post.title}
-              className="w-full h-auto rounded-lg shadow-md mb-8"
-            />
-          )}
-        </header>
-
-        <div className="prose prose-lg max-w-none">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
-        </div>
-
-        <div className="mt-12 pt-8 border-t border-gray-200">
-          <h3 className="text-2xl font-semibold mb-4">Share this article</h3>
-          <div className="flex space-x-4">
-            <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                post.title
-              )}&url=${encodeURIComponent(window.location.href)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-600"
-            >
-              <span className="sr-only">Twitter</span>
-              <svg
-                className="h-6 w-6"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-              </svg>
-            </a>
-            <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                window.location.href
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800"
-            >
-              <span className="sr-only">Facebook</span>
-              <svg
-                className="h-6 w-6"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </a>
-            <a
-              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-                window.location.href
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-800 hover:text-blue-900"
-            >
-              <span className="sr-only">LinkedIn</span>
-              <svg
-                className="h-6 w-6"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M19.7 3H4.3A1.3 1.3 0 003 4.3v15.4A1.3 1.3 0 004.3 21h15.4a1.3 1.3 0 001.3-1.3V4.3A1.3 1.3 0 0019.7 3zM8.339 18.338H5.667v-8.59h2.672v8.59zM7.004 8.574a1.548 1.548 0 11-.002-3.096 1.548 1.548 0 01.002 3.096zm11.335 9.764H15.67v-4.177c0-.996-.017-2.278-1.387-2.278-1.389 0-1.601 1.086-1.601 2.206v4.249h-2.667v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.779 3.203 4.092v4.711z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </article>
+          </motion.div>
+        </article>
+      </div>
     </MainLayout>
   );
 };
