@@ -17,6 +17,8 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("later");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
   const navigate = useNavigate();
   const total = cart.reduce(
     (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
@@ -29,11 +31,33 @@ const Checkout = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+
     // Validate form fields
+    let hasError = false;
+    setEmailError(false);
+    setPhoneError(false);
     if (!name.trim() || !email.trim() || !phone.trim()) {
       toast.error("Please fill in all required fields");
-      return;
+      hasError = true;
     }
+
+    // Email validation
+    const emailRegex = /^[\w-.]+@[\w-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email.trim())) {
+      toast.error("Please enter a valid email address");
+      setEmailError(true);
+      hasError = true;
+    }
+
+    // Ghanaian phone number validation (accepts 10 digits, starts with 0, or international format)
+    const phoneRegex = /^(0[235]\d{8}|\+233[235]\d{8})$/;
+    if (!phoneRegex.test(phone.trim().replace(/\s+/g, ""))) {
+      toast.error("Please enter a valid Ghanaian phone number");
+      setPhoneError(true);
+      hasError = true;
+    }
+
+    if (hasError) return;
 
     if (cart.length === 0) {
       toast.error("Your cart is empty");
@@ -159,9 +183,12 @@ const Checkout = () => {
             <label className="block mb-1 font-medium">Email</label>
             <input
               type="email"
-              className="w-full border rounded px-3 py-2"
+              className={`w-full border rounded px-3 py-2 ${emailError ? 'border-red-500' : ''}`}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError(false);
+              }}
               required
             />
           </div>
@@ -169,9 +196,12 @@ const Checkout = () => {
             <label className="block mb-1 font-medium">Phone Number</label>
             <input
               type="tel"
-              className="w-full border rounded px-3 py-2"
+              className={`w-full border rounded px-3 py-2 ${phoneError ? 'border-red-500' : ''}`}
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                setPhoneError(false);
+              }}
               required
             />
           </div>
