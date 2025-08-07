@@ -1,8 +1,15 @@
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
-
-type Product = Tables<"products">;
+// Define Product type manually if not exported from Supabase types
+type Product = {
+  id?: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  stock: number;
+  image_url: string;
+};
 
 interface ProductFormProps {
   product?: Product;
@@ -95,6 +102,10 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
         <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg shadow-sm animate-pulse">
           {error}
         </div>
+      )}
+
+      {formData.stock === 0 && (
+        <span className="inline-block px-3 py-1 rounded bg-red-100 text-red-700 text-sm font-semibold mb-2">Out of stock</span>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -252,7 +263,7 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
         )}
       </div>
 
-      <div className="flex justify-end space-x-3 pt-2">
+      <div className="flex flex-wrap gap-3 justify-end pt-2">
         <button
           type="button"
           onClick={onCancel}
@@ -267,6 +278,32 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
         >
           {loading ? "Saving..." : product ? "Update Product" : "Add Product"}
         </button>
+        {product && (
+          <button
+            type="button"
+            className="px-4 py-2 border border-red-500 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition"
+            disabled={loading || formData.stock === 0}
+            onClick={async () => {
+              setLoading(true);
+              setError(null);
+              try {
+                const { error } = await supabase
+                  .from("products")
+                  .update({ stock: 0 })
+                  .eq("id", product.id);
+                if (error) throw error;
+                setFormData((prev) => ({ ...prev, stock: 0 }));
+                onSuccess();
+              } catch (err: any) {
+                setError(err?.message || "Failed to mark out of stock");
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            Mark Out of Stock
+          </button>
+        )}
       </div>
     </form>
   );

@@ -148,6 +148,11 @@ const Shop = () => {
                             alt={product.name}
                             className="w-full h-full object-cover"
                           />
+                          {product.stock === 0 && (
+                            <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded z-10">
+                              Out of stock
+                            </span>
+                          )}
                         </div>
                         <div className="p-4">
                           <span className="text-sm text-vet-teal font-medium">

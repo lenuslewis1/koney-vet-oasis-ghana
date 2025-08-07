@@ -9,7 +9,19 @@ import {
   X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import type { Tables } from "@/integrations/supabase/types";
+// Replace 'ProductsType' with the actual exported type for your products table from Supabase types
+// import type { ProductsType } from "@/integrations/supabase/types";
+// Define Product type locally to match Supabase products table
+type Product = {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  price: number;
+  stock: number;
+  image_url: string;
+  created_at?: string;
+};
 import ProductForm from "@/components/admin/ProductForm";
 import PageTransition from "@/components/layout/PageTransition";
 import { motion } from "framer-motion";
@@ -24,8 +36,8 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-
-type Product = Tables<"products">;
+// type Product = ProductsType;
+// type Product = Tables<"products">;
 
 const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -303,8 +315,11 @@ const Products = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 flex items-center gap-2">
                           {product.stock}
+                          {product.stock === 0 && (
+                            <span className="inline-block px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-semibold">Out of stock</span>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -372,7 +387,7 @@ const Products = () => {
               <AlertDialogAction
                 onClick={async () => {
                   if (productToDelete) {
-                    await handleDelete(productToDelete.id);
+                    await handleDelete(productToDelete.id.toString());
                     setProductToDelete(null);
                   }
                 }}
