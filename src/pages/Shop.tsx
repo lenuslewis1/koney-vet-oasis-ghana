@@ -172,8 +172,12 @@ const Shop = () => {
                       <div className="px-4 pb-4 -mt-2">
                         <Button
                           size="sm"
-                          className="bg-vet-blue hover:bg-vet-teal w-full"
+                          className={product.stock === 0 
+                            ? "bg-gray-400 w-full cursor-not-allowed" 
+                            : "bg-vet-blue hover:bg-vet-teal w-full"}
+                          disabled={product.stock === 0}
                           onClick={(e) => {
+                            if (product.stock === 0) return;
                             e.preventDefault();
                             addToCart({
                               id: product.id,
@@ -185,7 +189,8 @@ const Shop = () => {
                             toast.success(`Added ${product.name} to cart`);
                           }}
                         >
-                          <ShoppingCart className="h-4 w-4 mr-2" /> Add to Cart
+                          <ShoppingCart className="h-4 w-4 mr-2" /> 
+                          {product.stock === 0 ? "Out of stock" : "Add to Cart"}
                         </Button>
                       </div>
                     </div>

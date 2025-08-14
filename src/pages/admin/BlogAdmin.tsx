@@ -1,8 +1,10 @@
 import { useEffect, useState, useRef } from "react";
-import { Plus, Loader2, Trash2, Edit } from "lucide-react";
+import { Plus, Loader2, Trash2, Edit, UploadCloud } from "lucide-react";
 import PageTransition from "@/components/layout/PageTransition";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadToCloudinary } from "@/lib/cloudinaryService";
+import { toast } from "@/hooks/use-toast";
 
 interface BlogPost {
   id: string;
@@ -23,6 +25,7 @@ const BlogAdmin = () => {
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [blogToDeleteId, setBlogToDeleteId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchBlogs();
@@ -43,22 +46,69 @@ const BlogAdmin = () => {
     setLoading(false);
   };
 
-  // Upload image to Supabase Storage
+  // Upload image to Cloudinary
   const uploadImage = async (file: File): Promise<string | null> => {
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Date.now()}.${fileExt}`;
-    const { data, error } = await supabase.storage
-      .from("blog-images")
-      .upload(fileName, file, { upsert: true });
-    if (error) {
-      setError(error.message);
+    try {
+      setUploading(true);
+      setError(null);
+      
+      // Upload to Cloudinary
+      const cloudinaryUrl = await uploadToCloudinary(file);
+      
+      // Log successful upload
+      console.log("Image uploaded to Cloudinary:", cloudinaryUrl);
+      toast({
+        title: "Image uploaded successfully",
+        description: "Your image has been uploaded to Cloudinary.",
+        duration: 3000,
+      });
+      
+      return cloudinaryUrl;
+    } catch (err: any) {
+      console.error("Error uploading image to Cloudinary:", err);
+      setError(err?.message || "Failed to upload image");
+      toast({
+        title: "Upload failed",
+        description: err?.message || "Failed to upload image to Cloudinary",
+        variant: "destructive",
+        duration: 5000,
+      });
       return null;
+    } finally {
+      setUploading(false);
     }
-    const { data: { publicUrl } } = supabase.storage
-      .from("blog-images")
-      .getPublicUrl(data.path);
-    return publicUrl;
   };
+
+
+
+  // Handle image upload when file input changes
+  useEffect(() => {
+    const currentFileInput = fileInputRef.current;
+    const handleFileChange = async (e: Event) => {
+      const input = e.target as HTMLInputElement;
+      const file = input.files?.[0];
+      if (!file) return;
+      
+      try {
+        const cloudinaryUrl = await uploadImage(file);
+        if (cloudinaryUrl) {
+          setForm(prev => ({ ...prev, imageUrl: cloudinaryUrl }));
+        }
+      } catch (err: any) {
+        console.error("Image upload handler error:", err);
+      }
+    };
+    
+    if (currentFileInput) {
+      currentFileInput.addEventListener('change', handleFileChange);
+    }
+    
+    return () => {
+      if (currentFileInput) {
+        currentFileInput.removeEventListener('change', handleFileChange);
+      }
+    };
+  }, []);
 
   const handleCreateOrUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,19 +116,8 @@ const BlogAdmin = () => {
     setError(null);
     let imageUrl = form.imageUrl;
 
-    if (
-      fileInputRef.current &&
-      fileInputRef.current.files &&
-      fileInputRef.current.files[0]
-    ) {
-      const uploadedUrl = await uploadImage(fileInputRef.current.files[0]);
-      if (uploadedUrl) imageUrl = uploadedUrl;
-    } else if (
-      editingPost &&
-      !form.imageUrl &&
-      !fileInputRef.current?.files?.length
-    ) {
-      // If editing and no new image/link is provided, keep the existing image
+    // If editing and no new image/link is provided, keep the existing image
+    if (editingPost && !form.imageUrl) {
       imageUrl = editingPost.image_url || "";
     }
 
@@ -197,29 +236,69 @@ const BlogAdmin = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Image (Upload or Paste Link)
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Blog Post Image
               </label>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mb-2"
-              />
-              <input
-                type="url"
-                placeholder="Or paste image link here"
-                className="mt-1 block w-full rounded-lg border-gray-300 shadow focus:border-blue-500 focus:ring-blue-500"
-                value={form.imageUrl}
-                onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-              />
-              {form.imageUrl && ( // Show current image if editing and there's an image
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">Current Image:</p>
+              <div className="p-4 border border-dashed border-gray-300 rounded-lg bg-gray-50 mb-4">
+                <div className="text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                  >
+                    {uploading ? (
+                      <span className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Uploading Image...
+                      </span>
+                    ) : (
+                      <span className="flex items-center">
+                        <UploadCloud size={16} className="mr-2" />
+                        Upload Image
+                      </span>
+                    )}
+                  </button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    PNG, JPG, GIF up to 10MB
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mt-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Image URL
+                </label>
+                <input
+                  type="url"
+                  placeholder="Image URL (automatically filled after upload)"
+                  className="mt-1 block w-full rounded-lg border-gray-300 shadow focus:border-blue-500 focus:ring-blue-500"
+                  value={form.imageUrl}
+                  onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                  disabled={uploading}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  URL will be automatically filled after upload, or you can paste one manually.
+                </p>
+              </div>
+              
+              {form.imageUrl && (
+                <div className="mt-3">
+                  <p className="text-sm text-gray-500">Preview:</p>
                   <img
                     src={form.imageUrl}
-                    alt="Current"
-                    className="h-24 w-24 object-cover rounded-md mt-1"
+                    alt="Preview"
+                    className="h-32 w-auto object-cover rounded border mt-1"
                   />
                 </div>
               )}

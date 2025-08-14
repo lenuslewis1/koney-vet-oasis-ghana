@@ -1,11 +1,11 @@
 import emailjs from '@emailjs/browser';
 
-// EmailJS configuration with provided credentials
-// Note: You need to add your EmailJS Public Key to .env file as VITE_EMAILJS_PUBLIC_KEY
-// Get it from: https://dashboard.emailjs.com/admin/account
+// EmailJS configuration with environment variables
+// Note: You need to add your EmailJS credentials to .env file
+// Get them from: https://dashboard.emailjs.com/admin/account
 const EMAILJS_CONFIG = {
-  serviceId: 'service_uehk5ke',
-  adminTemplateId: 'template_oqhdtrr',
+  serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_uehk5ke',
+  adminTemplateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_oqhdtrr',
   publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'your_public_key_here',
   adminEmail: 'koneysvethospital@gmail.com'
 };
@@ -13,6 +13,10 @@ const EMAILJS_CONFIG = {
 // Initialize EmailJS with validation
 export const initEmailJS = () => {
   const publicKey = EMAILJS_CONFIG.publicKey;
+  
+  // Add more detailed debugging
+  console.log('EmailJS initialization - Public Key:', publicKey);
+  console.log('Environment variable value:', import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
   
   if (!publicKey || publicKey === 'your_public_key_here') {
     console.error('❌ EmailJS Public Key is not configured properly!');
@@ -23,7 +27,7 @@ export const initEmailJS = () => {
   
   try {
     emailjs.init(publicKey);
-    console.log('✅ EmailJS initialized successfully');
+    console.log('✅ EmailJS initialized successfully with key:', publicKey);
     return true;
   } catch (error) {
     console.error('❌ Failed to initialize EmailJS:', error);

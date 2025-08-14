@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadToCloudinary } from "@/lib/cloudinaryService";
 // Define Product type manually if not exported from Supabase types
 type Product = {
   id?: number;
@@ -32,31 +33,22 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Handle image upload to Supabase Storage
+  // Handle image upload to Cloudinary
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
     setError(null);
     try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const filePath = `products/${fileName}`;
-      const { error: uploadError } = await supabase.storage
-        .from("product-images")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-      if (uploadError) throw uploadError;
-      // Get public URL
-      const { data } = supabase.storage
-        .from("product-images")
-        .getPublicUrl(filePath);
-      setUploadedUrl(data.publicUrl);
-      setFormData((prev) => ({ ...prev, image_url: data.publicUrl }));
+      // Upload to Cloudinary
+      const cloudinaryUrl = await uploadToCloudinary(file);
+      
+      // Set the Cloudinary URL in the form
+      setUploadedUrl(cloudinaryUrl);
+      setFormData((prev) => ({ ...prev, image_url: cloudinaryUrl }));
     } catch (err: any) {
       setError(err?.message || "Image upload failed");
+      console.error("Upload error:", err);
     } finally {
       setUploading(false);
     }
@@ -222,36 +214,57 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Product Image
         </label>
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
-          <div className="flex-1">
-            <input
-              type="url"
-              placeholder="Paste image link or upload below"
-              className="block w-full rounded-lg border-gray-300 shadow focus:border-blue-500 focus:ring-blue-500"
-              value={uploadedUrl ? uploadedUrl : formData.image_url}
-              onChange={handleImageUrlChange}
-              disabled={uploading}
-            />
-          </div>
-          <div className="flex items-center gap-2 mt-2 md:mt-0">
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              className="hidden"
-              onChange={handleImageUpload}
-              disabled={uploading}
-            />
-            <button
-              type="button"
-              className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm hover:bg-gray-200 transition"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-            >
-              {uploading ? "Uploading..." : "Upload Image"}
-            </button>
+        <div className="p-4 border border-dashed border-gray-300 rounded-lg bg-gray-50 mb-4">
+          <div className="text-center">
+            <div className="mt-2">
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+              <button
+                type="button"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+              >
+                {uploading ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Uploading Image...
+                  </span>
+                ) : (
+                  "Upload Image"
+                )}
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              PNG, JPG, GIF up to 10MB
+            </p>
           </div>
         </div>
+        
+        <div className="mt-2">
+          <label htmlFor="image_url" className="block text-sm font-medium text-gray-700">
+            Image URL
+          </label>
+          <input
+            type="url"
+            id="image_url"
+            placeholder="Image URL (automatically filled after upload)"
+            className="mt-1 block w-full rounded-lg border-gray-300 shadow focus:border-blue-500 focus:ring-blue-500"
+            value={uploadedUrl ? uploadedUrl : formData.image_url}
+            onChange={handleImageUrlChange}
+            disabled={uploading}
+          />
+        </div>
+        
         {(formData.image_url || uploadedUrl) && (
           <div className="mt-3">
             <img

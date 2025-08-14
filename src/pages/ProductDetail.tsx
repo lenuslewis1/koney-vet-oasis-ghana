@@ -120,7 +120,11 @@ const ProductDetail = () => {
                 <span className="text-2xl font-semibold text-vet-dark">
                   GH₵{product.price.toFixed(2)}
                 </span>
-                <span className="ml-4 text-sm bg-green-100 text-green-800 py-1 px-2 rounded">
+                <span className={`ml-4 text-sm py-1 px-2 rounded ${
+                  product.stock > 0 
+                    ? "bg-green-100 text-green-800" 
+                    : "bg-red-600 text-white font-bold"
+                }`}>
                   {product.stock > 0
                     ? `${product.stock} in stock`
                     : "Out of stock"}

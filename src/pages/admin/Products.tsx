@@ -23,6 +23,7 @@ type Product = {
   created_at?: string;
 };
 import ProductForm from "@/components/admin/ProductForm";
+import CloudinaryTester from "@/components/admin/CloudinaryTester";
 import PageTransition from "@/components/layout/PageTransition";
 import { motion } from "framer-motion";
 import {
@@ -186,6 +187,8 @@ const Products = () => {
       product.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const [showImageTester, setShowImageTester] = useState(false);
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-[url('/admin-bg.jpg')] bg-cover bg-center bg-no-repeat bg-fixed space-y-6">
@@ -193,16 +196,32 @@ const Products = () => {
           <h1 className="text-2xl font-bold text-gray-900">
             Products Management
           </h1>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            whileHover={{ scale: 1.05 }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700"
-            onClick={handleAdd}
-          >
-            <Plus size={20} className="mr-2" />
-            Add New Product
-          </motion.button>
+          <div className="flex gap-2">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+              className="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-purple-700"
+              onClick={() => setShowImageTester(!showImageTester)}
+            >
+              {showImageTester ? "Hide" : "Test"} Image Upload
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700"
+              onClick={handleAdd}
+            >
+              <Plus size={20} className="mr-2" />
+              Add New Product
+            </motion.button>
+          </div>
         </div>
+        
+        {showImageTester && (
+          <div className="mb-6">
+            <CloudinaryTester />
+          </div>
+        )}
 
         {/* Search and Filter Bar */}
         <div className="flex flex-col sm:flex-row gap-4">

@@ -189,18 +189,59 @@ const Orders = () => {
     if (!orderToDelete) return;
     setUpdatingId(orderToDelete);
     try {
-      // Call the RPC function to delete the order and its items securely
-      const { error } = await supabase.rpc("delete_order", {
-        order_id_to_delete: orderToDelete,
-      });
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("You must be logged in to delete an order");
+      }
+
+      // Try the RPC function first (if it exists)
+      let rpcError = null;
+      try {
+        const { error } = await supabase.rpc("delete_order", {
+          order_id_to_delete: orderToDelete,
+        });
+        
+        // If no error, the RPC worked!
+        if (!error) {
+          toast.success("Order deleted successfully!");
+          await fetchOrders();
+          return;
+        }
+        
+        // Store the error for fallback
+        rpcError = error;
+      } catch (rpcErr) {
+        rpcError = rpcErr;
+        console.log("RPC delete_order failed, falling back to manual deletion");
+      }
+      
+      // Fallback: Manual deletion with transaction
+      const { error } = await supabase.from('order_items')
+        .delete()
+        .eq('order_id', orderToDelete)
+        .then(async ({ error: itemsError }) => {
+          if (itemsError) {
+            return { error: itemsError };
+          }
+          
+          // Once items are deleted, delete the order
+          return await supabase.from('orders')
+            .delete()
+            .eq('id', orderToDelete);
+        });
+        
       if (error) throw error;
-      toast.success("Order deleted!");
+      
+      toast.success("Order deleted successfully!");
       await fetchOrders();
     } catch (err: any) {
+      console.error("Error deleting order:", err);
       setError(err?.message || "Failed to delete order");
-      toast.error("Failed to delete order");
+      toast.error("Failed to delete order: " + err?.message);
     } finally {
       setUpdatingId(null);
+      setOrderToDelete(null);
     }
   };
 
